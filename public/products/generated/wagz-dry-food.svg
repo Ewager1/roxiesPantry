@@ -1,0 +1,103 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 600 600"
+  width="600"
+  height="600"
+>
+  <rect
+    width="600"
+    height="600"
+    rx="36"
+    fill="#7c3aed"
+  />
+
+  <!-- Decorative background -->
+  <circle
+    cx="510"
+    cy="80"
+    r="165"
+    fill="#ddd6fe"
+    opacity="0.18"
+  />
+
+  <circle
+    cx="70"
+    cy="555"
+    r="190"
+    fill="#ddd6fe"
+    opacity="0.12"
+  />
+
+  <!-- Brand label -->
+  <text
+    x="300"
+    y="58"
+    text-anchor="middle"
+    fill="#ddd6fe"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="15"
+    font-weight="700"
+    letter-spacing="4"
+  >
+    BRAND
+  </text>
+
+  <!-- Brand name -->
+  <text
+    x="300"
+    y="118"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="48"
+    font-weight="700"
+  >
+    Wagz
+  </text>
+
+  <!-- Product icon -->
+  <g
+    transform="translate(180 165) scale(10)"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" />
+  <path d="M12 12l8 -4.5" />
+  <path d="M12 12l0 9" />
+  <path d="M12 12l-8 -4.5" />
+  <path d="M16 5.25l-8 4.5" />
+
+  </g>
+
+  <!-- Product type label -->
+  <text
+    x="300"
+    y="448"
+    text-anchor="middle"
+    fill="#ddd6fe"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="15"
+    font-weight="700"
+    letter-spacing="4"
+  >
+    PRODUCT TYPE
+  </text>
+
+  <!-- Product type -->
+  <text
+    x="300"
+    y="505"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="42"
+    font-weight="700"
+  >
+    Dry Food
+  </text>
+</svg>
