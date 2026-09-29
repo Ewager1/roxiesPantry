@@ -1,28 +1,14 @@
-import { useProducts } from "./features/products/api/useProducts";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { ProductsPage } from "./pages/ProductsPage";
 
 function App() {
-  const { data: products, isPending, isError, error } = useProducts();
-
-  if (isPending) {
-    return <p>Loading products...</p>;
-  }
-
-  if (isError) {
-    return <p>Error: {error.message}</p>;
-  }
-
   return (
-    <main>
-      <h1>Roxie's Pantry</h1>
-
-      {products.map((product) => (
-        <article key={product.id}>
-          <h2>{product.name}</h2>
-          <p>{product.brand.name}</p>
-          <p>${product.price}</p>
-        </article>
-      ))}
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/products" replace />} />
+        <Route path="/products" element={<ProductsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
