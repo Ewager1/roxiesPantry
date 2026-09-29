@@ -61,6 +61,7 @@ model Pet {
 model Brand {
   id       String    @id @default(cuid())
   name     String    @unique
+  slug     String    @unique
   products Product[]
 }
 
