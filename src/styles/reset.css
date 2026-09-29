@@ -1,0 +1,94 @@
+/* Box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove default spacing */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Improve text rendering */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* Base body behavior */
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Media should behave predictably */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form controls inherit typography */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Buttons behave consistently */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Remove default list styling */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Links inherit surrounding styles by default */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Avoid text overflow issues */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* Improve heading balance where supported */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+/* Improve paragraph readability where supported */
+p {
+  text-wrap: pretty;
+}
+
+/* Create a predictable root stacking context */
+#root {
+  min-height: 100vh;
+  isolation: isolate;
+}
