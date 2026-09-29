@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/index.ts"
   },
   "keywords": [],
   "author": "Ethan",
@@ -19,8 +20,10 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@apollo/server": "^5.5.1",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "graphql": "^16.14.2",
     "pg": "^8.23.0"
   }
 }
