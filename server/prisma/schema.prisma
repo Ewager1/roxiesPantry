@@ -7,6 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+/// A sellable item in the catalog.
+///
+/// Products belong to one Pet, one Brand, and one ProductType.
+/// Category is derived through ProductType rather than stored directly,
+/// which prevents invalid category/type combinations.
+///
+/// Flexible filtering attributes such as flavor, material, diet, and
+/// durability are assigned through ProductFacetOption.
 model Product {
   id          String  @id @default(cuid())
   name        String
@@ -17,28 +25,168 @@ model Product {
   rating      Float?
   reviewCount Int     @default(0)
 
-  brandId    String
-  categoryId String
+  petId         String
+  brandId       String
+  productTypeId String
 
-  brand    Brand    @relation(fields: [brandId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
+  pet         Pet         @relation(fields: [petId], references: [id])
+  brand       Brand       @relation(fields: [brandId], references: [id])
+  productType ProductType @relation(fields: [productTypeId], references: [id])
+
+  /// Flexible filter values assigned to this product.
+  facetOptions ProductFacetOption[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([petId])
   @@index([brandId])
-  @@index([categoryId])
+  @@index([productTypeId])
 }
 
+/// The animal a product is intended for.
+///
+/// Examples: Dog, Cat.
+/// This is part of the core catalog hierarchy rather than a generic facet.
+model Pet {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+/// The manufacturer or merchandising brand of a product.
+///
+/// Examples: Roxie's Kitchen, Kongo, Wagz.
 model Brand {
   id       String    @id @default(cuid())
   name     String    @unique
   products Product[]
 }
 
+/// A broad catalog grouping.
+///
+/// Examples: Food, Treats, Toys, Grooming, Beds.
+///
+/// Products do not reference Category directly. They reference ProductType,
+/// which belongs to a Category.
 model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  productTypes ProductType[]
+}
+
+/// A specific kind of product within a Category.
+///
+/// Examples:
+/// Food -> Dry Food
+/// Food -> Wet Food
+/// Toys -> Rope Toy
+/// Toys -> Plush Toy
+///
+/// ProductType also controls which Facets are valid for products of this type.
+model ProductType {
+  id         String @id @default(cuid())
+  name       String
+  slug       String
+  categoryId String
+
+  category Category @relation(fields: [categoryId], references: [id])
+
   products Product[]
+
+  /// Defines which filter groups are applicable to this product type.
+  facets ProductTypeFacet[]
+
+  /// A slug only needs to be unique within its category.
+  @@unique([categoryId, slug])
+  @@index([categoryId])
+}
+
+/// A reusable group of filter options.
+///
+/// Examples:
+/// Flavor
+/// Special Diet
+/// Material
+/// Durability
+/// Health Feature
+///
+/// Facets are generic so new filtering dimensions can be added without
+/// adding new nullable columns to Product.
+model Facet {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  /// Possible values belonging to this facet.
+  options FacetOption[]
+
+  /// Product types for which this facet should be available.
+  productTypes ProductTypeFacet[]
+}
+
+/// A selectable value belonging to a Facet.
+///
+/// Examples:
+/// Flavor -> Chicken
+/// Flavor -> Salmon
+/// Material -> Rope
+/// Durability -> Tough
+///
+/// Slugs are unique within a facet rather than globally.
+model FacetOption {
+  id      String @id @default(cuid())
+  name    String
+  slug    String
+  facetId String
+
+  facet Facet @relation(fields: [facetId], references: [id])
+
+  /// Products assigned this particular option.
+  products ProductFacetOption[]
+
+  @@unique([facetId, slug])
+  @@index([facetId])
+}
+
+/// Join table defining which Facets are applicable to each ProductType.
+///
+/// Example:
+/// Dry Food -> Flavor
+/// Dry Food -> Special Diet
+/// Rope Toy -> Material
+/// Rope Toy -> Durability
+///
+/// This relationship controls which filters the UI can expose for a
+/// given product context.
+model ProductTypeFacet {
+  productTypeId String
+  facetId       String
+
+  productType ProductType @relation(fields: [productTypeId], references: [id])
+  facet       Facet       @relation(fields: [facetId], references: [id])
+
+  @@id([productTypeId, facetId])
+}
+
+/// Join table assigning actual FacetOptions to Products.
+///
+/// Example:
+/// Product "Mountain Rope Tug"
+/// -> Material: Rope
+/// -> Durability: Tough
+///
+/// Cascade deletion prevents orphaned join rows when either side is removed.
+model ProductFacetOption {
+  productId     String
+  facetOptionId String
+
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  facetOption FacetOption @relation(fields: [facetOptionId], references: [id], onDelete: Cascade)
+
+  @@id([productId, facetOptionId])
+  /// Supports filtering products efficiently by facet option.
+  @@index([facetOptionId])
 }
