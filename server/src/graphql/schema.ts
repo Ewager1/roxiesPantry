@@ -1,15 +1,29 @@
 import { prisma } from "../lib/prisma.js";
 
 export const typeDefs = `#graphql
+  type Pet {
+    id: ID!
+    name: String!
+    slug: String!
+  }
+
   type Brand {
     id: ID!
     name: String!
+    slug: String!
   }
 
   type Category {
     id: ID!
     name: String!
     slug: String!
+  }
+
+  type ProductType {
+    id: ID!
+    name: String!
+    slug: String!
+    category: Category!
   }
 
   type Product {
@@ -21,8 +35,10 @@ export const typeDefs = `#graphql
     imageUrl: String!
     rating: Float
     reviewCount: Int!
+
+    pet: Pet!
     brand: Brand!
-    category: Category!
+    productType: ProductType!
   }
 
   type Query {
@@ -35,10 +51,19 @@ export const resolvers = {
     products: async () => {
       return prisma.product.findMany({
         include: {
+          pet: true,
           brand: true,
-          category: true,
+          productType: {
+            include: {
+              category: true,
+            },
+          },
         },
       });
     },
+  },
+
+  Product: {
+    price: (product: { price: unknown }) => String(product.price),
   },
 };

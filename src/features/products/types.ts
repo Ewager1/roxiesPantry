@@ -7,13 +7,28 @@ export type Product = {
   imageUrl: string;
   rating: number | null;
   reviewCount: number;
-  brand: {
-    id: string;
-    name: string;
-  };
-  category: {
+
+  pet: {
     id: string;
     name: string;
     slug: string;
+  };
+
+  brand: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+
+  productType: {
+    id: string;
+    name: string;
+    slug: string;
+
+    category: {
+      id: string;
+      name: string;
+      slug: string;
+    };
   };
 };

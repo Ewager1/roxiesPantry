@@ -12,14 +12,29 @@ const PRODUCTS_QUERY = `
       imageUrl
       rating
       reviewCount
-      brand {
-        id
-        name
-      }
-      category {
+
+      pet {
         id
         name
         slug
+      }
+
+      brand {
+        id
+        name
+        slug
+      }
+
+      productType {
+        id
+        name
+        slug
+
+        category {
+          id
+          name
+          slug
+        }
       }
     }
   }
