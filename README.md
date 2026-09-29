@@ -1,75 +1,56 @@
-# React + TypeScript + Vite
+# Roxie’s Pantry
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **Work in progress**
 
-Currently, two official plugins are available:
+Roxie’s Pantry is a pet e-commerce application built around something I enjoy about frontend engineering: creating a fast, intuitive user experience through thoughtful state management and data architecture.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+The project focuses on two areas that often become difficult as applications grow:
 
-## React Compiler
+- **Intelligent caching and data loading** so navigation feels immediate without making unnecessary requests.
+- **Advanced, shareable filtering** that allows users to build complex product searches, preserve them in the URL, share them with others, and navigate naturally with the browser’s back and forward controls.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Rather than treating filtering as a collection of disconnected checkboxes, Roxie’s Pantry is designed around a faceted catalog system where available filters can change based on the user’s current search context.
 
-## Expanding the ESLint configuration
+The goal is to build an e-commerce experience that feels simple to use while demonstrating the engineering required to make that simplicity possible.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Project Goals
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Caching
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Use TanStack Query to manage server state and product-query caching
+- Design predictable query keys for catalog state
+- Reuse cached results during navigation
+- Prefetch likely next requests
+- Minimize unnecessary network traffic
+- Handle invalidation deliberately rather than relying on broad refetches
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Responsive User Experience
 
-```
+- Build a catalog that works across mobile, tablet, and desktop
+- Use modern CSS and CSS Modules
+- Minimize layout shifts
+- Provide clear loading, empty, and error states
+- Optimize product images and catalog rendering
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+### Shareable Catalog State
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Filtering, sorting, search, and pagination will be represented in the URL.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+This allows users to:
 
+- bookmark a filtered catalog
+- send the exact same results to another person
+- refresh without losing their search state
+- use browser back and forward navigation naturally
+
+For example:
+
+```text
+/products/dog/food/dry-food
+  ?brand=roxies-kitchen
+  &brand=green-mountain
+  &flavor=chicken
+  &minPrice=20
+  &maxPrice=50
+  &rating=4
 ```
