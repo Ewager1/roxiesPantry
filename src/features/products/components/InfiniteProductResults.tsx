@@ -1,6 +1,10 @@
-import { useInfiniteProducts } from "../api/useInfiniteProducts";
-import { ProductGrid } from "./ProductGrid";
 import { useEffect, useRef } from "react";
+
+import { useInfiniteProducts } from "../api/useInfiniteProducts";
+
+import { ProductGrid } from "./ProductGrid";
+
+import { INFINITE_SCROLL_ROOT_MARGIN } from "../constants";
 
 export function InfiniteProductResults() {
   const {
@@ -13,10 +17,9 @@ export function InfiniteProductResults() {
     isFetchingNextPage,
   } = useInfiniteProducts();
 
-  // products is expected to be a single array
-  const products = data?.pages.flatMap((page) => page.items) ?? [];
-
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const products = data?.pages.flatMap((page) => page.items) ?? [];
 
   useEffect(() => {
     const sentinel = loadMoreRef.current;
@@ -32,8 +35,8 @@ export function InfiniteProductResults() {
         }
       },
       {
-        // Start loading before the user reaches the exact bottom.
-        rootMargin: "300px 0px",
+        // Begin loading shortly before the user reaches the end.
+        rootMargin: INFINITE_SCROLL_ROOT_MARGIN,
       },
     );
 
@@ -60,7 +63,7 @@ export function InfiniteProductResults() {
     <>
       <ProductGrid products={products} />
 
-      <div ref={loadMoreRef} />
+      <div ref={loadMoreRef} style={{ height: "1px" }} aria-hidden="true" />
 
       {isFetchingNextPage && <p>Loading more products...</p>}
 

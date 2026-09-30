@@ -1,1 +1,2 @@
-export const PRODUCT_STALE_TIME_MS = 30_000
+export const PRODUCT_STALE_TIME_MS = 30_000;
+export const INFINITE_SCROLL_ROOT_MARGIN = "300px 0px";
