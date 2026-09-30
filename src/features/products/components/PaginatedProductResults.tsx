@@ -13,6 +13,12 @@ import { ProductPagination } from "./ProductPagination";
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
 
+  // deduping and sorting to give same filter state to cache.
+  const brands = searchParams
+    .getAll("brand")
+    .filter((brand, index, allBrands) => allBrands.indexOf(brand) === index)
+    .sort();
+
   const queryClient = useQueryClient();
 
   const pageParam = Number(searchParams.get("page"));
@@ -20,7 +26,7 @@ export function PaginatedProductResults() {
   // Guard against invalid page values manually entered into the URL.
   const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  const { data, isPending, isError, error } = useProducts(page);
+  const { data, isPending, isError, error } = useProducts(page, brands);
 
   const products = data?.items ?? [];
 
@@ -44,16 +50,20 @@ export function PaginatedProductResults() {
 
     void queryClient
       .query({
-        queryKey: productKeys.list(nextPage),
+        queryKey: productKeys.list(nextPage, brands),
 
-        queryFn: () => getProducts(nextPage),
+        queryFn: () =>
+          getProducts({
+            page: nextPage,
+            brands,
+          }),
 
         staleTime: PRODUCT_STALE_TIME_MS,
       })
       .catch((error) => {
         console.error("Product prefetch failed:", error);
       });
-  }, [pagination?.page, pagination?.hasNextPage, queryClient]);
+  }, [pagination?.page, pagination?.hasNextPage, queryClient, brands]);
 
   if (isPending) {
     return <p>Loading products...</p>;

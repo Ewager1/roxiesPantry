@@ -51,6 +51,7 @@ export const typeDefs = `#graphql
     products(
       page: Int = 1
       pageSize: Int = DEFAULT_PAGE_SIZE
+      brands: [String!]
     ): ProductPage!
   }
 
@@ -72,6 +73,7 @@ type ProductPage {
 type ProductsArgs = {
   page?: number;
   pageSize?: number;
+  brands?: string[];
 };
 
 export const resolvers = {
@@ -86,10 +88,20 @@ export const resolvers = {
 
       const skip = (page - 1) * pageSize;
 
+      const where = args.brands?.length
+        ? {
+            brand: {
+              slug: {
+                in: args.brands,
+              },
+            },
+          }
+        : {};
+
       const items = await prisma.product.findMany({
         skip,
         take: pageSize,
-
+        where,
         orderBy: {
           id: "asc",
         },
@@ -105,7 +117,9 @@ export const resolvers = {
         },
       });
 
-      const totalItems = await prisma.product.count();
+      const totalItems = await prisma.product.count({
+        where,
+      });
 
       const totalPages = Math.ceil(totalItems / pageSize);
 

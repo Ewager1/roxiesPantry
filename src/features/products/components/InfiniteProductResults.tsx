@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { useInfiniteProducts } from "../api/useInfiniteProducts";
 
 import { ProductGrid } from "./ProductGrid";
 
-import { INFINITE_SCROLL_ROOT_MARGIN } from "../constants";
-
 export function InfiniteProductResults() {
+  const [searchParams] = useSearchParams();
+
+  const brands = [...new Set(searchParams.getAll("brand"))].sort();
+
   const {
     data,
     isPending,
@@ -15,7 +18,7 @@ export function InfiniteProductResults() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteProducts();
+  } = useInfiniteProducts(brands);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,8 +38,7 @@ export function InfiniteProductResults() {
         }
       },
       {
-        // Begin loading shortly before the user reaches the end.
-        rootMargin: INFINITE_SCROLL_ROOT_MARGIN,
+        rootMargin: "300px 0px",
       },
     );
 
@@ -52,7 +54,12 @@ export function InfiniteProductResults() {
   }
 
   if (isError) {
-    return <p>Error: {error.message}</p>;
+    return (
+      <p>
+        Failed to load products:{" "}
+        {error instanceof Error ? error.message : "Unknown error"}
+      </p>
+    );
   }
 
   if (products.length === 0) {
@@ -67,7 +74,7 @@ export function InfiniteProductResults() {
 
       {isFetchingNextPage && <p>Loading more products...</p>}
 
-      {!hasNextPage && <p>You've reached the end.</p>}
+      {!hasNextPage && <p>You’ve reached the end.</p>}
     </>
   );
 }

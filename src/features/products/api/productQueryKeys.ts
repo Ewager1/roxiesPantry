@@ -3,7 +3,14 @@ export const productKeys = {
 
   lists: () => [...productKeys.all, "list"] as const,
 
-  list: (page: number) => [...productKeys.lists(), { page }] as const,
-
-  infinite: () => [...productKeys.all, "infinite"] as const,
+  list: (page: number, brands: string[] = []) =>
+    [
+      ...productKeys.lists(),
+      {
+        page,
+        brands,
+      },
+    ] as const,
+  infinite: (brands: string[] = []) =>
+    [...productKeys.all, "infinite", { brands }] as const,
 };
