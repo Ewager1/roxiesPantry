@@ -1,5 +1,8 @@
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
+
 import type { PaginationInfo } from "../types";
+
+import styles from "./ProductPagination.module.css";
 
 type ProductPaginationProps = {
   pagination: PaginationInfo;
@@ -78,8 +81,9 @@ export function ProductPagination({ pagination }: ProductPaginationProps) {
   );
 
   return (
-    <nav aria-label="Product pagination">
+    <nav className={styles.pagination} aria-label="Product pagination">
       <button
+        className={styles.button}
         type="button"
         disabled={!pagination.hasPreviousPage}
         onClick={() => goToPage(pagination.page - 1)}
@@ -90,7 +94,11 @@ export function ProductPagination({ pagination }: ProductPaginationProps) {
       {paginationItems.map((item, index) => {
         if (item === "ellipsis") {
           return (
-            <span key={`ellipsis-${index}`} aria-hidden="true">
+            <span
+              className={styles.ellipsis}
+              key={`ellipsis-${index}`}
+              aria-hidden="true"
+            >
               ...
             </span>
           );
@@ -100,6 +108,9 @@ export function ProductPagination({ pagination }: ProductPaginationProps) {
 
         return (
           <button
+            className={`${styles.button} ${
+              isCurrentPage ? styles.currentPage : ""
+            }`}
             key={item}
             type="button"
             disabled={isCurrentPage}
@@ -112,6 +123,7 @@ export function ProductPagination({ pagination }: ProductPaginationProps) {
       })}
 
       <button
+        className={styles.button}
         type="button"
         disabled={!pagination.hasNextPage}
         onClick={() => goToPage(pagination.page + 1)}
