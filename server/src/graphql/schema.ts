@@ -1,5 +1,11 @@
 import { prisma } from "../lib/prisma.js";
 
+import {
+  DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE,
+  MIN_PAGE_SIZE,
+} from "../constants/catalog.js";
+
 export const typeDefs = `#graphql
   type Pet {
     id: ID!
@@ -42,14 +48,52 @@ export const typeDefs = `#graphql
   }
 
   type Query {
-    products: [Product!]!
+    products(
+      page: Int = 1
+      pageSize: Int = DEFAULT_PAGE_SIZE
+    ): ProductPage!
   }
+
+  type PaginationInfo {
+  page: Int!
+  pageSize: Int!
+  totalItems: Int!
+  totalPages: Int!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type ProductPage {
+  items: [Product!]!
+  pagination: PaginationInfo!
+}
 `;
+
+type ProductsArgs = {
+  page?: number;
+  pageSize?: number;
+};
 
 export const resolvers = {
   Query: {
-    products: async () => {
-      return prisma.product.findMany({
+    products: async (_parent: unknown, args: ProductsArgs) => {
+      const page = Math.max(args.page ?? 1, 1);
+
+      const pageSize = Math.min(
+        Math.max(args.pageSize ?? DEFAULT_PAGE_SIZE, MIN_PAGE_SIZE),
+        MAX_PAGE_SIZE,
+      );
+
+      const skip = (page - 1) * pageSize;
+
+      const items = await prisma.product.findMany({
+        skip,
+        take: pageSize,
+
+        orderBy: {
+          id: "asc",
+        },
+
         include: {
           pet: true,
           brand: true,
@@ -60,6 +104,23 @@ export const resolvers = {
           },
         },
       });
+
+      const totalItems = await prisma.product.count();
+
+      const totalPages = Math.ceil(totalItems / pageSize);
+
+      return {
+        items,
+
+        pagination: {
+          page,
+          pageSize,
+          totalItems,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1,
+        },
+      };
     },
   },
 

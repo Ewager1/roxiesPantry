@@ -1,10 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getProducts } from "./getProducts";
 import { productKeys } from "./productQueryKeys";
 
-export function useProducts() {
+export function useProducts(page: number) {
   return useQuery({
-    queryKey: [productKeys],
-    queryFn: getProducts,
+    queryKey: productKeys.list(page),
+
+    queryFn: () => getProducts(page),
+    placeholderData: keepPreviousData,
   });
 }

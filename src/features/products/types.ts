@@ -32,3 +32,17 @@ export type Product = {
     };
   };
 };
+
+export type PaginationInfo = {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+};
+
+export type ProductPage = {
+  items: Product[];
+  pagination: PaginationInfo;
+};

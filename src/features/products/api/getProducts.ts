@@ -1,9 +1,18 @@
 import { graphqlRequest } from "../../../api/graphql";
-import type { Product } from "../types";
+import type { ProductPage } from "../types";
 
 const PRODUCTS_QUERY = `
-  query Products {
-    products {
+  query Products($page: Int, $pageSize: Int) {
+  products(page: $page, pageSize: $pageSize) {
+    pagination {
+      page
+      pageSize
+      totalItems
+      totalPages
+      hasNextPage
+      hasPreviousPage
+    }
+    items {
       id
       name
       slug
@@ -12,24 +21,20 @@ const PRODUCTS_QUERY = `
       imageUrl
       rating
       reviewCount
-
-      pet {
-        id
-        name
-        slug
-      }
-
       brand {
         id
         name
         slug
       }
-
+      pet {
+        id
+        name
+        slug
+      }
       productType {
         id
         name
         slug
-
         category {
           id
           name
@@ -38,14 +43,17 @@ const PRODUCTS_QUERY = `
       }
     }
   }
+}
 `;
 
 type ProductsResponse = {
-  products: Product[];
+  products: ProductPage;
 };
 
-export async function getProducts(): Promise<Product[]> {
-  const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY);
+export async function getProducts(page: number): Promise<ProductPage> {
+  const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY, {
+    page,
+  });
 
   return data.products;
 }
