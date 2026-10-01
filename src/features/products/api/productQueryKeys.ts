@@ -1,7 +1,5 @@
-import type { CatalogFilters } from "../filters/catalogFilters";
+import type { CatalogFilters } from "../filterLogic/catalogFilters";
 
-// Filters are set here then ingested everywhere else,
-// making it more scalable to add filters in futute
 export const productKeys = {
   all: ["products"] as const,
 

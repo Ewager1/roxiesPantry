@@ -52,6 +52,9 @@ export const typeDefs = `#graphql
       page: Int = 1
       pageSize: Int =${DEFAULT_PAGE_SIZE}
       brands: [String!]
+      pets: [String!]
+      categories: [String!]
+      productTypes: [String!]
     ): ProductPage!
 
     catalogFilterOptions: CatalogFilterOptions!
@@ -73,6 +76,9 @@ type ProductPage {
 
 type CatalogFilterOptions {
     brands: [Brand!]!
+    pets: [Pet!]!
+    categories: [Category!]!
+    productTypes: [ProductType!]!
 }
 `;
 
@@ -80,6 +86,9 @@ type ProductsArgs = {
   page?: number;
   pageSize?: number;
   brands?: string[];
+  pets?: string[];
+  categories?: string[];
+  productTypes?: string[];
 };
 
 export const resolvers = {
@@ -94,15 +103,53 @@ export const resolvers = {
 
       const skip = (page - 1) * pageSize;
 
-      const where = args.brands?.length
-        ? {
-            brand: {
+      const filterConditions = [];
+
+      if (args.brands?.length) {
+        filterConditions.push({
+          brand: {
+            slug: {
+              in: args.brands,
+            },
+          },
+        });
+      }
+
+      if (args.pets?.length) {
+        filterConditions.push({
+          pet: {
+            slug: {
+              in: args.pets,
+            },
+          },
+        });
+      }
+
+      if (args.categories?.length) {
+        filterConditions.push({
+          productType: {
+            category: {
               slug: {
-                in: args.brands,
+                in: args.categories,
               },
             },
-          }
-        : {};
+          },
+        });
+      }
+
+      if (args.productTypes?.length) {
+        filterConditions.push({
+          productType: {
+            slug: {
+              in: args.productTypes,
+            },
+          },
+        });
+      }
+
+      const where = {
+        AND: filterConditions,
+      };
 
       const items = await prisma.product.findMany({
         skip,
@@ -144,14 +191,41 @@ export const resolvers = {
     },
 
     catalogFilterOptions: async () => {
-      const brands = await prisma.brand.findMany({
-        orderBy: {
-          name: "asc",
-        },
-      });
+      const [brands, pets, categories, productTypes] = await Promise.all([
+        prisma.brand.findMany({
+          orderBy: {
+            name: "asc",
+          },
+        }),
+
+        prisma.pet.findMany({
+          orderBy: {
+            name: "asc",
+          },
+        }),
+
+        prisma.category.findMany({
+          orderBy: {
+            name: "asc",
+          },
+        }),
+
+        prisma.productType.findMany({
+          orderBy: {
+            name: "asc",
+          },
+
+          include: {
+            category: true,
+          },
+        }),
+      ]);
 
       return {
         brands,
+        pets,
+        categories,
+        productTypes,
       };
     },
   },

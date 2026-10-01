@@ -8,7 +8,7 @@ import { PRODUCT_STALE_TIME_MS } from "../constants";
 import { getProducts } from "./getProducts";
 import { productKeys } from "./productQueryKeys";
 
-import type { CatalogFilters } from "../filters/catalogFilters";
+import type { CatalogFilters } from "../filterLogic/catalogFilters";
 
 export function productQueryOptions(page: number, filters: CatalogFilters) {
   return queryOptions({

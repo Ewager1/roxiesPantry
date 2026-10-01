@@ -10,7 +10,11 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className={styles.card}>
       <img className={styles.image} src={product.imageUrl} alt={product.name} />
 
-      <p className={styles.brand}>{product.brand.name}</p>
+      <div className={styles.metadata}>
+        <p className={styles.brand}>{product.brand.name}</p>
+
+        <p className={styles.pet}>{product.pet.name}</p>
+      </div>
 
       <h2 className={styles.name}>{product.name}</h2>
 

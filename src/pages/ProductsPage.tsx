@@ -8,8 +8,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { productQueryOptions } from "../features/products/api/useProducts";
 import { infiniteProductsQueryOptions } from "../features/products/api/useInfiniteProducts";
 
+import { useCatalogFilters } from "../features/products/filterLogic/useCatalogFilters";
+
+import { ProductFilters } from "../features/products/components/filters/ProductFilters";
+
 import styles from "./ProductsPage.module.css";
-import { useCatalogFilters } from "../features/products/filters/useCatalogFilters";
 
 type ProductView = "pagination" | "infinite";
 
@@ -60,34 +63,38 @@ export function ProductsPage() {
       <header className={styles.header}>
         <h1 className={styles.title}>Products</h1>
 
-        <p className={styles.subtitle}>Browse Roxie’s Pantry</p>
+        <p className={styles.subtitle}>Browse Roxie&apos;s Pantry</p>
       </header>
 
-      <div className={styles.viewToggle}>
-        <button
-          className={styles.viewToggleButton}
-          type="button"
-          disabled={view === "pagination"}
-          onClick={() => changeView("pagination")}
-        >
-          Pages
-        </button>
+      <div className={styles.catalogLayout}>
+        <ProductFilters />
 
-        <button
-          className={styles.viewToggleButton}
-          type="button"
-          disabled={view === "infinite"}
-          onClick={() => changeView("infinite")}
-        >
-          Infinite Scroll
-        </button>
+        <section className={styles.results}>
+          <div className={styles.viewToggle}>
+            <button
+              className={styles.viewToggleButton}
+              disabled={view === "pagination"}
+              onClick={() => changeView("pagination")}
+            >
+              Pages
+            </button>
+
+            <button
+              className={styles.viewToggleButton}
+              disabled={view === "infinite"}
+              onClick={() => changeView("infinite")}
+            >
+              Infinite Scroll
+            </button>
+          </div>
+
+          {view === "infinite" ? (
+            <InfiniteProductResults />
+          ) : (
+            <PaginatedProductResults />
+          )}
+        </section>
       </div>
-
-      {view === "infinite" ? (
-        <InfiniteProductResults />
-      ) : (
-        <PaginatedProductResults />
-      )}
     </main>
   );
 }

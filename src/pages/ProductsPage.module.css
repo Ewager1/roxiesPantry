@@ -1,10 +1,11 @@
 .page {
+  --catalog-top-offset: 13rem;
+
   width: 100%;
   max-width: var(--max-width-content);
   margin: 0 auto;
   padding: var(--space-8) var(--space-4);
 }
-
 .header {
   margin-bottom: var(--space-8);
 }
@@ -61,4 +62,14 @@
 
   cursor: default;
   opacity: 1;
+}
+.catalogLayout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.results {
+  min-width: 0;
 }

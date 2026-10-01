@@ -7,7 +7,7 @@ import { productQueryOptions, useProducts } from "../api/useProducts";
 import { ProductGrid } from "./ProductGrid";
 import { ProductPagination } from "./ProductPagination";
 
-import { useCatalogFilters } from "../filters/useCatalogFilters";
+import { useCatalogFilters } from "../filterLogic/useCatalogFilters";
 
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();

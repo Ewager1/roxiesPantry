@@ -6,7 +6,6 @@ import {
   type CatalogFilterKey,
   type CatalogFilters,
 } from "./catalogFilters";
-
 import { CATALOG_FILTER_PARAMS } from "../constants";
 
 export function useCatalogFilters() {
@@ -18,6 +17,18 @@ export function useCatalogFilters() {
     () => ({
       brands: normalizeFilterValues(
         searchParams.getAll(CATALOG_FILTER_PARAMS.brands),
+      ),
+
+      pets: normalizeFilterValues(
+        searchParams.getAll(CATALOG_FILTER_PARAMS.pets),
+      ),
+
+      categories: normalizeFilterValues(
+        searchParams.getAll(CATALOG_FILTER_PARAMS.categories),
+      ),
+
+      productTypes: normalizeFilterValues(
+        searchParams.getAll(CATALOG_FILTER_PARAMS.productTypes),
       ),
     }),
     [searchParams],

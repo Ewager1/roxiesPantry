@@ -1,15 +1,21 @@
 import { graphqlRequest } from "../../../api/graphql";
 import type { ProductPage } from "../types";
-import type { CatalogFilters } from "../filters/catalogFilters";
+import type { CatalogFilters } from "../filterLogic/catalogFilters";
 
 const PRODUCTS_QUERY = `
   query Products(
     $page: Int
     $brands: [String!]
+    $pets: [String!]
+    $categories: [String!]
+    $productTypes: [String!]
   ) {
     products(
       page: $page
       brands: $brands
+      pets: $pets
+      categories: $categories
+      productTypes: $productTypes
     ) {
       pagination {
         page
@@ -74,6 +80,9 @@ export async function getProducts({
   const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY, {
     page,
     brands: filters.brands,
+    pets: filters.pets,
+    categories: filters.categories,
+    productTypes: filters.productTypes,
   });
 
   return data.products;

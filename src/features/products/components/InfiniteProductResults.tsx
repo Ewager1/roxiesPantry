@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import { useInfiniteProducts } from "../api/useInfiniteProducts";
 
 import { ProductGrid } from "./ProductGrid";
-import { useCatalogFilters } from "../filters/useCatalogFilters";
+import { useCatalogFilters } from "../filterLogic/useCatalogFilters";
 
 export function InfiniteProductResults() {
   const { filters } = useCatalogFilters();
