@@ -1,14 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
 
 import { useInfiniteProducts } from "../api/useInfiniteProducts";
 
 import { ProductGrid } from "./ProductGrid";
+import { useCatalogFilters } from "../filters/useCatalogFilters";
 
 export function InfiniteProductResults() {
-  const [searchParams] = useSearchParams();
-
-  const brands = [...new Set(searchParams.getAll("brand"))].sort();
+  const { filters } = useCatalogFilters();
 
   const {
     data,
@@ -18,7 +16,7 @@ export function InfiniteProductResults() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteProducts(brands);
+  } = useInfiniteProducts(filters);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 

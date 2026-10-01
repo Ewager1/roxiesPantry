@@ -50,9 +50,11 @@ export const typeDefs = `#graphql
   type Query {
     products(
       page: Int = 1
-      pageSize: Int = DEFAULT_PAGE_SIZE
+      pageSize: Int =${DEFAULT_PAGE_SIZE}
       brands: [String!]
     ): ProductPage!
+
+    catalogFilterOptions: CatalogFilterOptions!
   }
 
   type PaginationInfo {
@@ -67,6 +69,10 @@ export const typeDefs = `#graphql
 type ProductPage {
   items: [Product!]!
   pagination: PaginationInfo!
+}
+
+type CatalogFilterOptions {
+    brands: [Brand!]!
 }
 `;
 
@@ -134,6 +140,18 @@ export const resolvers = {
           hasNextPage: page < totalPages,
           hasPreviousPage: page > 1,
         },
+      };
+    },
+
+    catalogFilterOptions: async () => {
+      const brands = await prisma.brand.findMany({
+        orderBy: {
+          name: "asc",
+        },
+      });
+
+      return {
+        brands,
       };
     },
   },

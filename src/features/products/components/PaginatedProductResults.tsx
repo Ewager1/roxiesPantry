@@ -2,22 +2,15 @@ import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 
-import { getProducts } from "../api/getProducts";
-import { productKeys } from "../api/productQueryKeys";
-import { useProducts } from "../api/useProducts";
-import { PRODUCT_STALE_TIME_MS } from "../constants";
+import { productQueryOptions, useProducts } from "../api/useProducts";
 
 import { ProductGrid } from "./ProductGrid";
 import { ProductPagination } from "./ProductPagination";
 
+import { useCatalogFilters } from "../filters/useCatalogFilters";
+
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
-
-  // deduping and sorting to give same filter state to cache.
-  const brands = searchParams
-    .getAll("brand")
-    .filter((brand, index, allBrands) => allBrands.indexOf(brand) === index)
-    .sort();
 
   const queryClient = useQueryClient();
 
@@ -26,7 +19,9 @@ export function PaginatedProductResults() {
   // Guard against invalid page values manually entered into the URL.
   const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  const { data, isPending, isError, error } = useProducts(page, brands);
+  const { filters } = useCatalogFilters();
+
+  const { data, isPending, isError, error } = useProducts(page, filters);
 
   const products = data?.items ?? [];
 
@@ -49,21 +44,11 @@ export function PaginatedProductResults() {
     const nextPage = pagination.page + 1;
 
     void queryClient
-      .query({
-        queryKey: productKeys.list(nextPage, brands),
-
-        queryFn: () =>
-          getProducts({
-            page: nextPage,
-            brands,
-          }),
-
-        staleTime: PRODUCT_STALE_TIME_MS,
-      })
+      .query(productQueryOptions(nextPage, filters))
       .catch((error) => {
         console.error("Product prefetch failed:", error);
       });
-  }, [pagination?.page, pagination?.hasNextPage, queryClient, brands]);
+  }, [pagination?.page, pagination?.hasNextPage, queryClient, filters]);
 
   if (isPending) {
     return <p>Loading products...</p>;

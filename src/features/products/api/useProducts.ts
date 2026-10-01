@@ -8,19 +8,21 @@ import { PRODUCT_STALE_TIME_MS } from "../constants";
 import { getProducts } from "./getProducts";
 import { productKeys } from "./productQueryKeys";
 
-export function productQueryOptions(page: number, brands: string[] = []) {
+import type { CatalogFilters } from "../filters/catalogFilters";
+
+export function productQueryOptions(page: number, filters: CatalogFilters) {
   return queryOptions({
-    queryKey: productKeys.list(page, brands),
+    queryKey: productKeys.list(page, filters),
     queryFn: () =>
       getProducts({
         page,
-        brands,
+        filters,
       }),
     placeholderData: keepPreviousData,
     staleTime: PRODUCT_STALE_TIME_MS,
   });
 }
 
-export function useProducts(page: number, brands: string[] = []) {
-  return useQuery(productQueryOptions(page, brands));
+export function useProducts(page: number, filters: CatalogFilters) {
+  return useQuery(productQueryOptions(page, filters));
 }

@@ -1,5 +1,6 @@
 import { graphqlRequest } from "../../../api/graphql";
 import type { ProductPage } from "../types";
+import type { CatalogFilters } from "../filters/catalogFilters";
 
 const PRODUCTS_QUERY = `
   query Products(
@@ -63,16 +64,16 @@ type ProductsResponse = {
 
 type GetProductsOptions = {
   page: number;
-  brands?: string[];
+  filters: CatalogFilters;
 };
 
 export async function getProducts({
   page,
-  brands,
+  filters,
 }: GetProductsOptions): Promise<ProductPage> {
   const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY, {
     page,
-    brands,
+    brands: filters.brands,
   });
 
   return data.products;

@@ -1,16 +1,27 @@
+import type { CatalogFilters } from "../filters/catalogFilters";
+
+// Filters are set here then ingested everywhere else,
+// making it more scalable to add filters in futute
 export const productKeys = {
   all: ["products"] as const,
 
   lists: () => [...productKeys.all, "list"] as const,
 
-  list: (page: number, brands: string[] = []) =>
+  list: (page: number, filters: CatalogFilters) =>
     [
       ...productKeys.lists(),
       {
         page,
-        brands,
+        filters,
       },
     ] as const,
-  infinite: (brands: string[] = []) =>
-    [...productKeys.all, "infinite", { brands }] as const,
+
+  infinite: (filters: CatalogFilters) =>
+    [
+      ...productKeys.all,
+      "infinite",
+      {
+        filters,
+      },
+    ] as const,
 };

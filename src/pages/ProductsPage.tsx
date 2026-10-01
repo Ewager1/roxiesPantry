@@ -2,13 +2,14 @@ import { useSearchParams } from "react-router";
 
 import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
 import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { productQueryOptions } from "../features/products/api/useProducts";
 import { infiniteProductsQueryOptions } from "../features/products/api/useInfiniteProducts";
 
 import styles from "./ProductsPage.module.css";
+import { useCatalogFilters } from "../features/products/filters/useCatalogFilters";
 
 type ProductView = "pagination" | "infinite";
 
@@ -20,16 +21,12 @@ export function ProductsPage() {
   const view: ProductView =
     searchParams.get("view") === "infinite" ? "infinite" : "pagination";
 
-  // useMemo keeps the same array ref for ref stability, not an expensive calculation.
-  const brands = useMemo(
-    () => [...new Set(searchParams.getAll("brand"))].sort(),
-    [searchParams],
-  );
+  const { filters } = useCatalogFilters();
 
   useEffect(() => {
     if (view === "pagination") {
       void queryClient
-        .infiniteQuery(infiniteProductsQueryOptions(brands))
+        .infiniteQuery(infiniteProductsQueryOptions(filters))
         .catch((error) => {
           console.error("Infinite product cache warming failed:", error);
         });
@@ -37,10 +34,10 @@ export function ProductsPage() {
       return;
     }
 
-    void queryClient.query(productQueryOptions(1)).catch((error) => {
+    void queryClient.query(productQueryOptions(1, filters)).catch((error) => {
       console.error("Paginated product cache warming failed:", error);
     });
-  }, [view, queryClient, brands]);
+  }, [view, queryClient, filters]);
 
   function changeView(nextView: ProductView) {
     const nextParams = new URLSearchParams(searchParams);
