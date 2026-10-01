@@ -7,7 +7,7 @@ import { productQueryOptions, useProducts } from "../api/useProducts";
 import { ProductGrid } from "./ProductGrid";
 import { ProductPagination } from "./ProductPagination";
 
-import { useCatalogFilters } from "../filterLogic/useCatalogFilters";
+import { useCatalogQuery } from "../useCatalogQuery";
 
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
@@ -19,9 +19,9 @@ export function PaginatedProductResults() {
   // Guard against invalid page values manually entered into the URL.
   const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
-  const { filters } = useCatalogFilters();
+  const query = useCatalogQuery();
 
-  const { data, isPending, isError, error } = useProducts(page, filters);
+  const { data, isPending, isError, error } = useProducts(page, query);
 
   const products = data?.items ?? [];
 
@@ -44,11 +44,11 @@ export function PaginatedProductResults() {
     const nextPage = pagination.page + 1;
 
     void queryClient
-      .query(productQueryOptions(nextPage, filters))
+      .query(productQueryOptions(nextPage, query))
       .catch((error) => {
         console.error("Product prefetch failed:", error);
       });
-  }, [pagination?.page, pagination?.hasNextPage, queryClient, filters]);
+  }, [pagination?.page, pagination?.hasNextPage, queryClient, query]);
 
   if (isPending) {
     return <p>Loading products...</p>;

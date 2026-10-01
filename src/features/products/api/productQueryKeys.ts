@@ -1,25 +1,27 @@
-import type { CatalogFilters } from "../filterLogic/catalogFilters";
+import type { CatalogQuery } from "../catalogQuery";
 
+// Include all catalog query state in the key so each distinct
+// result set and ordering receives its own cache entry.
 export const productKeys = {
   all: ["products"] as const,
 
   lists: () => [...productKeys.all, "list"] as const,
 
-  list: (page: number, filters: CatalogFilters) =>
+  list: (page: number, query: CatalogQuery) =>
     [
       ...productKeys.lists(),
       {
         page,
-        filters,
+        query,
       },
     ] as const,
 
-  infinite: (filters: CatalogFilters) =>
+  infinite: (query: CatalogQuery) =>
     [
       ...productKeys.all,
       "infinite",
       {
-        filters,
+        query,
       },
     ] as const,
 };

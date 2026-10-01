@@ -5,24 +5,26 @@ import {
 } from "@tanstack/react-query";
 
 import { PRODUCT_STALE_TIME_MS } from "../constants";
+import type { CatalogQuery } from "../catalogQuery";
+
 import { getProducts } from "./getProducts";
 import { productKeys } from "./productQueryKeys";
 
-import type { CatalogFilters } from "../filterLogic/catalogFilters";
-
-export function productQueryOptions(page: number, filters: CatalogFilters) {
+export function productQueryOptions(page: number, query: CatalogQuery) {
   return queryOptions({
-    queryKey: productKeys.list(page, filters),
+    queryKey: productKeys.list(page, query),
+
     queryFn: () =>
       getProducts({
         page,
-        filters,
+        query,
       }),
+
     placeholderData: keepPreviousData,
     staleTime: PRODUCT_STALE_TIME_MS,
   });
 }
 
-export function useProducts(page: number, filters: CatalogFilters) {
-  return useQuery(productQueryOptions(page, filters));
+export function useProducts(page: number, query: CatalogQuery) {
+  return useQuery(productQueryOptions(page, query));
 }

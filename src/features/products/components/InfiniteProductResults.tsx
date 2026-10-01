@@ -3,10 +3,11 @@ import { useEffect, useRef } from "react";
 import { useInfiniteProducts } from "../api/useInfiniteProducts";
 
 import { ProductGrid } from "./ProductGrid";
-import { useCatalogFilters } from "../filterLogic/useCatalogFilters";
+
+import { useCatalogQuery } from "../useCatalogQuery";
 
 export function InfiniteProductResults() {
-  const { filters } = useCatalogFilters();
+  const query = useCatalogQuery();
 
   const {
     data,
@@ -16,7 +17,7 @@ export function InfiniteProductResults() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteProducts(filters);
+  } = useInfiniteProducts(query);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 

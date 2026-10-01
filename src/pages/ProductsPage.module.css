@@ -30,7 +30,7 @@
 
   background: var(--color-surface-alt);
 
-  margin-bottom: var(--space-6);
+  margin-bottom: 0;
 }
 
 .viewToggleButton {
@@ -72,4 +72,13 @@
 
 .results {
   min-width: 0;
+}
+
+.resultsToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  margin-bottom: var(--space-8);
 }

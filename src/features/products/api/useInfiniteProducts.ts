@@ -1,20 +1,20 @@
 import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
 
 import { PRODUCT_STALE_TIME_MS } from "../constants";
+import type { CatalogQuery } from "../catalogQuery";
+
 import { getProducts } from "./getProducts";
 import { productKeys } from "./productQueryKeys";
-import type { CatalogFilters } from "../filterLogic/catalogFilters";
 
-export function infiniteProductsQueryOptions(filters: CatalogFilters) {
+export function infiniteProductsQueryOptions(query: CatalogQuery) {
   return infiniteQueryOptions({
-    queryKey: productKeys.infinite(filters),
+    queryKey: productKeys.infinite(query),
 
     queryFn: ({ pageParam }) =>
       getProducts({
         page: pageParam,
-        filters,
+        query,
       }),
-
     initialPageParam: 1,
 
     getNextPageParam: (lastPage) => {
@@ -29,6 +29,6 @@ export function infiniteProductsQueryOptions(filters: CatalogFilters) {
   });
 }
 
-export function useInfiniteProducts(filters: CatalogFilters) {
-  return useInfiniteQuery(infiniteProductsQueryOptions(filters));
+export function useInfiniteProducts(query: CatalogQuery) {
+  return useInfiniteQuery(infiniteProductsQueryOptions(query));
 }

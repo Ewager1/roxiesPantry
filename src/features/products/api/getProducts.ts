@@ -1,6 +1,6 @@
 import { graphqlRequest } from "../../../api/graphql";
 import type { ProductPage } from "../types";
-import type { CatalogFilters } from "../filterLogic/catalogFilters";
+import type { CatalogQuery } from "../catalogQuery";
 
 const PRODUCTS_QUERY = `
   query Products(
@@ -9,6 +9,7 @@ const PRODUCTS_QUERY = `
     $pets: [String!]
     $categories: [String!]
     $productTypes: [String!]
+    $sort: String
   ) {
     products(
       page: $page
@@ -16,6 +17,7 @@ const PRODUCTS_QUERY = `
       pets: $pets
       categories: $categories
       productTypes: $productTypes
+      sort: $sort
     ) {
       pagination {
         page
@@ -70,19 +72,20 @@ type ProductsResponse = {
 
 type GetProductsOptions = {
   page: number;
-  filters: CatalogFilters;
+  query: CatalogQuery;
 };
 
 export async function getProducts({
   page,
-  filters,
+  query,
 }: GetProductsOptions): Promise<ProductPage> {
   const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY, {
     page,
-    brands: filters.brands,
-    pets: filters.pets,
-    categories: filters.categories,
-    productTypes: filters.productTypes,
+    brands: query.filters.brands,
+    pets: query.filters.pets,
+    categories: query.filters.categories,
+    productTypes: query.filters.productTypes,
+    sort: query.sort,
   });
 
   return data.products;

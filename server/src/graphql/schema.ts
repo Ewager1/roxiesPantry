@@ -49,13 +49,14 @@ export const typeDefs = `#graphql
 
   type Query {
     products(
-      page: Int = 1
-      pageSize: Int =${DEFAULT_PAGE_SIZE}
-      brands: [String!]
-      pets: [String!]
-      categories: [String!]
-      productTypes: [String!]
-    ): ProductPage!
+    page: Int = 1
+    pageSize: Int = ${DEFAULT_PAGE_SIZE}
+     brands: [String!]
+    pets: [String!]
+    categories: [String!]
+    productTypes: [String!]
+    sort: String = "name-ascending"
+): ProductPage!
 
     catalogFilterOptions: CatalogFilterOptions!
   }
@@ -89,6 +90,7 @@ type ProductsArgs = {
   pets?: string[];
   categories?: string[];
   productTypes?: string[];
+  sort?: string;
 };
 
 export const resolvers = {
@@ -151,13 +153,32 @@ export const resolvers = {
         AND: filterConditions,
       };
 
+      const orderBy = (() => {
+        switch (args.sort) {
+          case "price-low-to-high":
+            return [{ price: "asc" as const }, { id: "asc" as const }];
+
+          case "price-high-to-low":
+            return [{ price: "desc" as const }, { id: "asc" as const }];
+
+          case "rating":
+            return [
+              { rating: "desc" as const },
+              { reviewCount: "desc" as const },
+              { id: "asc" as const },
+            ];
+
+          case "name-ascending":
+          default:
+            return [{ name: "asc" as const }, { id: "asc" as const }];
+        }
+      })();
+
       const items = await prisma.product.findMany({
         skip,
         take: pageSize,
         where,
-        orderBy: {
-          id: "asc",
-        },
+        orderBy,
 
         include: {
           pet: true,

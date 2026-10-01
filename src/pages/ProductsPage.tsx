@@ -1,16 +1,16 @@
-import { useSearchParams } from "react-router";
-
-import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
-import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router";
 
-import { productQueryOptions } from "../features/products/api/useProducts";
 import { infiniteProductsQueryOptions } from "../features/products/api/useInfiniteProducts";
+import { productQueryOptions } from "../features/products/api/useProducts";
 
-import { useCatalogFilters } from "../features/products/filterLogic/useCatalogFilters";
-
+import { CatalogSortSelect } from "../features/products/components/CatalogSortSelect";
+import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
+import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
 import { ProductFilters } from "../features/products/components/filters/ProductFilters";
+
+import { useCatalogQuery } from "../features/products/useCatalogQuery";
 
 import styles from "./ProductsPage.module.css";
 
@@ -21,15 +21,15 @@ export function ProductsPage() {
 
   const queryClient = useQueryClient();
 
+  const query = useCatalogQuery();
+
   const view: ProductView =
     searchParams.get("view") === "infinite" ? "infinite" : "pagination";
-
-  const { filters } = useCatalogFilters();
 
   useEffect(() => {
     if (view === "pagination") {
       void queryClient
-        .infiniteQuery(infiniteProductsQueryOptions(filters))
+        .infiniteQuery(infiniteProductsQueryOptions(query))
         .catch((error) => {
           console.error("Infinite product cache warming failed:", error);
         });
@@ -37,10 +37,10 @@ export function ProductsPage() {
       return;
     }
 
-    void queryClient.query(productQueryOptions(1, filters)).catch((error) => {
+    void queryClient.query(productQueryOptions(1, query)).catch((error) => {
       console.error("Paginated product cache warming failed:", error);
     });
-  }, [view, queryClient, filters]);
+  }, [view, queryClient, query]);
 
   function changeView(nextView: ProductView) {
     const nextParams = new URLSearchParams(searchParams);
@@ -70,22 +70,26 @@ export function ProductsPage() {
         <ProductFilters />
 
         <section className={styles.results}>
-          <div className={styles.viewToggle}>
-            <button
-              className={styles.viewToggleButton}
-              disabled={view === "pagination"}
-              onClick={() => changeView("pagination")}
-            >
-              Pages
-            </button>
+          <div className={styles.resultsToolbar}>
+            <div className={styles.viewToggle}>
+              <button
+                className={styles.viewToggleButton}
+                disabled={view === "pagination"}
+                onClick={() => changeView("pagination")}
+              >
+                Pages
+              </button>
 
-            <button
-              className={styles.viewToggleButton}
-              disabled={view === "infinite"}
-              onClick={() => changeView("infinite")}
-            >
-              Infinite Scroll
-            </button>
+              <button
+                className={styles.viewToggleButton}
+                disabled={view === "infinite"}
+                onClick={() => changeView("infinite")}
+              >
+                Infinite Scroll
+              </button>
+            </div>
+
+            <CatalogSortSelect />
           </div>
 
           {view === "infinite" ? (
