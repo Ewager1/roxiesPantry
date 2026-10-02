@@ -9,6 +9,7 @@ import { CatalogSortSelect } from "../features/products/components/CatalogSortSe
 import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
 import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
 import { ProductFilters } from "../features/products/components/filters/ProductFilters";
+import { CatalogSearchInput } from "../features/products/components/CatalogSearchInput";
 
 import { useCatalogQuery } from "../features/products/useCatalogQuery";
 
@@ -63,40 +64,46 @@ export function ProductsPage() {
       <header className={styles.header}>
         <h1 className={styles.title}>Products</h1>
 
-        <p className={styles.subtitle}>Browse Roxie&apos;s Pantry</p>
+        <p className={styles.subtitle}>Browse Roxie's Pantry</p>
       </header>
 
       <div className={styles.catalogLayout}>
         <ProductFilters />
 
         <section className={styles.results}>
-          <div className={styles.resultsToolbar}>
-            <div className={styles.viewToggle}>
-              <button
-                className={styles.viewToggleButton}
-                disabled={view === "pagination"}
-                onClick={() => changeView("pagination")}
-              >
-                Pages
-              </button>
-
-              <button
-                className={styles.viewToggleButton}
-                disabled={view === "infinite"}
-                onClick={() => changeView("infinite")}
-              >
-                Infinite Scroll
-              </button>
+          <section className={styles.results}>
+            <div className={styles.searchBar}>
+              <CatalogSearchInput />
             </div>
 
-            <CatalogSortSelect />
-          </div>
+            <div className={styles.resultsToolbar}>
+              <div className={styles.viewToggle}>
+                <button
+                  className={styles.viewToggleButton}
+                  disabled={view === "pagination"}
+                  onClick={() => changeView("pagination")}
+                >
+                  Pages
+                </button>
 
-          {view === "infinite" ? (
-            <InfiniteProductResults />
-          ) : (
-            <PaginatedProductResults />
-          )}
+                <button
+                  className={styles.viewToggleButton}
+                  disabled={view === "infinite"}
+                  onClick={() => changeView("infinite")}
+                >
+                  Infinite Scroll
+                </button>
+              </div>
+
+              <CatalogSortSelect />
+            </div>
+
+            {view === "infinite" ? (
+              <InfiniteProductResults />
+            ) : (
+              <PaginatedProductResults />
+            )}
+          </section>
         </section>
       </div>
     </main>

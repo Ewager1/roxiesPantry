@@ -10,6 +10,7 @@ const PRODUCTS_QUERY = `
     $categories: [String!]
     $productTypes: [String!]
     $sort: String
+    $search: String
   ) {
     products(
       page: $page
@@ -18,6 +19,7 @@ const PRODUCTS_QUERY = `
       categories: $categories
       productTypes: $productTypes
       sort: $sort
+      search: $search
     ) {
       pagination {
         page
@@ -86,6 +88,7 @@ export async function getProducts({
     categories: query.filters.categories,
     productTypes: query.filters.productTypes,
     sort: query.sort,
+    search: query.search,
   });
 
   return data.products;

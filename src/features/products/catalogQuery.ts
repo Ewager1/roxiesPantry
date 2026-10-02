@@ -4,4 +4,5 @@ import type { CatalogSort } from "./sortLogic/catalogSort";
 export type CatalogQuery = {
   filters: CatalogFilters;
   sort: CatalogSort;
+  search: string;
 };

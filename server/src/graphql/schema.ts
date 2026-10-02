@@ -49,38 +49,39 @@ export const typeDefs = `#graphql
 
   type Query {
     products(
-    page: Int = 1
-    pageSize: Int = ${DEFAULT_PAGE_SIZE}
-     brands: [String!]
-    pets: [String!]
-    categories: [String!]
-    productTypes: [String!]
-    sort: String = "name-ascending"
-): ProductPage!
+      page: Int = 1
+      pageSize: Int = ${DEFAULT_PAGE_SIZE}
+      brands: [String!]
+      pets: [String!]
+      categories: [String!]
+      productTypes: [String!]
+      sort: String = "name-ascending"
+      search: String
+    ): ProductPage!
 
     catalogFilterOptions: CatalogFilterOptions!
   }
 
   type PaginationInfo {
-  page: Int!
-  pageSize: Int!
-  totalItems: Int!
-  totalPages: Int!
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-}
+    page: Int!
+    pageSize: Int!
+    totalItems: Int!
+    totalPages: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+  }
 
-type ProductPage {
-  items: [Product!]!
-  pagination: PaginationInfo!
-}
+  type ProductPage {
+    items: [Product!]!
+    pagination: PaginationInfo!
+  }
 
-type CatalogFilterOptions {
+  type CatalogFilterOptions {
     brands: [Brand!]!
     pets: [Pet!]!
     categories: [Category!]!
     productTypes: [ProductType!]!
-}
+  }
 `;
 
 type ProductsArgs = {
@@ -91,7 +92,44 @@ type ProductsArgs = {
   categories?: string[];
   productTypes?: string[];
   sort?: string;
+  search?: string;
 };
+
+// Simple relevance tiers keep search ordering predictable without
+// introducing a full-text search or fuzzy-matching dependency.
+// 0 → exact product-name match
+// 1 → full phrase appears in product name
+// 2 → other valid multi-field match
+function getSearchRelevanceTier(
+  productName: string,
+  searchPhrase: string,
+): number {
+  const normalizedName = productName.trim().toLowerCase();
+  const normalizedPhrase = searchPhrase.trim().toLowerCase();
+
+  if (normalizedName === normalizedPhrase) {
+    return 0;
+  }
+
+  if (normalizedName.includes(normalizedPhrase)) {
+    return 1;
+  }
+
+  return 2;
+}
+
+function normalizeSort(sort?: string): string {
+  switch (sort) {
+    case "price-low-to-high":
+    case "price-high-to-low":
+    case "rating":
+    case "name-ascending":
+      return sort;
+
+    default:
+      return "name-ascending";
+  }
+}
 
 export const resolvers = {
   Query: {
@@ -149,12 +187,74 @@ export const resolvers = {
         });
       }
 
+      const searchPhrase = args.search?.trim() ?? "";
+
+      // Search terms are ANDed together, while each term may match any
+      // supported product field. This lets "dog bed" match Pet + Category.
+      const searchTerms = [
+        ...new Set(searchPhrase.split(/\s+/).filter(Boolean)),
+      ];
+
+      searchTerms.forEach((term) => {
+        filterConditions.push({
+          OR: [
+            {
+              name: {
+                contains: term,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: term,
+                mode: "insensitive",
+              },
+            },
+            {
+              brand: {
+                name: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              pet: {
+                name: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              productType: {
+                name: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+            {
+              productType: {
+                category: {
+                  name: {
+                    contains: term,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          ],
+        });
+      });
+
       const where = {
         AND: filterConditions,
       };
+      const sort = normalizeSort(args.sort);
 
       const orderBy = (() => {
-        switch (args.sort) {
+        switch (sort) {
           case "price-low-to-high":
             return [{ price: "asc" as const }, { id: "asc" as const }];
 
@@ -174,26 +274,69 @@ export const resolvers = {
         }
       })();
 
-      const items = await prisma.product.findMany({
-        skip,
-        take: pageSize,
-        where,
-        orderBy,
+      // Default search ordering favors relevance. An explicit price or
+      // rating sort instead lets search determine eligibility while the
+      // selected sort determines result order.
+      const shouldRankByRelevance =
+        Boolean(searchPhrase) && sort === "name-ascending";
 
-        include: {
-          pet: true,
-          brand: true,
-          productType: {
-            include: {
-              category: true,
+      let items;
+      let totalItems;
+
+      if (shouldRankByRelevance) {
+        // Relevance must be calculated before pagination. Otherwise a
+        // highly relevant match outside the initial page could be hidden.
+        const matchingItems = await prisma.product.findMany({
+          where,
+          orderBy,
+
+          include: {
+            pet: true,
+            brand: true,
+            productType: {
+              include: {
+                category: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      const totalItems = await prisma.product.count({
-        where,
-      });
+        matchingItems.sort((a, b) => {
+          return (
+            getSearchRelevanceTier(a.name, searchPhrase) -
+            getSearchRelevanceTier(b.name, searchPhrase)
+          );
+        });
+
+        totalItems = matchingItems.length;
+
+        items = matchingItems.slice(skip, skip + pageSize);
+      } else {
+        // Normal browsing and explicit sorts can remain database-paginated,
+        // avoiding the cost of loading the entire matching result set.
+        [items, totalItems] = await Promise.all([
+          prisma.product.findMany({
+            skip,
+            take: pageSize,
+            where,
+            orderBy,
+
+            include: {
+              pet: true,
+              brand: true,
+              productType: {
+                include: {
+                  category: true,
+                },
+              },
+            },
+          }),
+
+          prisma.product.count({
+            where,
+          }),
+        ]);
+      }
 
       const totalPages = Math.ceil(totalItems / pageSize);
 
