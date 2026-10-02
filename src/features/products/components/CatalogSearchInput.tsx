@@ -36,6 +36,11 @@ export function CatalogSearchInput() {
           name="search"
           defaultValue={search}
           placeholder="Search products"
+          onChange={(event) => {
+            if (search && event.currentTarget.value.trim() === "") {
+              setSearch("");
+            }
+          }}
         />
 
         <button className={styles.button} type="submit">
