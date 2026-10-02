@@ -2,6 +2,7 @@ import { useCatalogFilterOptions } from "../../api/useCatalogFilterOptions";
 import { useCatalogFilters } from "../../filterLogic/useCatalogFilters";
 
 import { FilterGroup } from "./FilterGroup";
+import { PriceRangeFilter } from "./PriceRangeFilter";
 
 import styles from "./ProductFilters.module.css";
 
@@ -26,12 +27,14 @@ export function ProductFilters() {
         selectedValues={filters.brands}
         onToggle={(brand) => toggleFilter("brands", brand)}
       />
+
       <FilterGroup
         label="Pet"
         options={data.pets}
         selectedValues={filters.pets}
         onToggle={(pet) => toggleFilter("pets", pet)}
       />
+
       <FilterGroup
         label="Category"
         options={data.categories}
@@ -45,6 +48,8 @@ export function ProductFilters() {
         selectedValues={filters.productTypes}
         onToggle={(productType) => toggleFilter("productTypes", productType)}
       />
+
+      <PriceRangeFilter />
     </aside>
   );
 }

@@ -12,6 +12,8 @@ const PRODUCTS_QUERY = `
     $productTypes: [String!]
     $sort: String
     $search: String
+    $minPrice: Float
+    $maxPrice: Float
   ) {
     products(
       page: $page
@@ -21,6 +23,8 @@ const PRODUCTS_QUERY = `
       productTypes: $productTypes
       sort: $sort
       search: $search
+      minPrice: $minPrice
+      maxPrice: $maxPrice
     ) {
       pagination {
         page
@@ -92,6 +96,8 @@ export async function getProducts({
     productTypes: query.filters.productTypes,
     sort: query.sort,
     search: query.search,
+    minPrice: query.priceRange.min,
+    maxPrice: query.priceRange.max,
   });
 
   return data.products;

@@ -1,8 +1,10 @@
 import type { CatalogFilters } from "./filterLogic/catalogFilters";
+import type { CatalogPriceRange } from "./priceLogic/catalogPriceRange";
 import type { CatalogSort } from "./sortLogic/catalogSort";
 
 export type CatalogQuery = {
   filters: CatalogFilters;
   sort: CatalogSort;
   search: string;
+  priceRange: CatalogPriceRange;
 };

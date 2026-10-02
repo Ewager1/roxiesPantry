@@ -57,6 +57,8 @@ export const typeDefs = `#graphql
       productTypes: [String!]
       sort: String = "name-ascending"
       search: String
+      minPrice: Float
+      maxPrice: Float
     ): ProductPage!
 
     catalogFilterOptions: CatalogFilterOptions!
@@ -93,6 +95,8 @@ type ProductsArgs = {
   productTypes?: string[];
   sort?: string;
   search?: string;
+  minPrice?: number | null;
+  maxPrice?: number | null;
 };
 
 // Simple relevance tiers keep search ordering predictable without
@@ -183,6 +187,36 @@ export const resolvers = {
             slug: {
               in: args.productTypes,
             },
+          },
+        });
+      }
+
+      // GraphQL nullable price arguments may arrive as null or be omitted.
+      // Normalize anything other than a valid non-negative number to undefined
+      // so Prisma receives no price bound instead of gte/lte: null.
+      const minPrice =
+        typeof args.minPrice === "number" &&
+        Number.isFinite(args.minPrice) &&
+        args.minPrice >= 0
+          ? args.minPrice
+          : undefined;
+
+      const maxPrice =
+        typeof args.maxPrice === "number" &&
+        Number.isFinite(args.maxPrice) &&
+        args.maxPrice >= 0
+          ? args.maxPrice
+          : undefined;
+
+      if (minPrice !== undefined || maxPrice !== undefined) {
+        filterConditions.push({
+          price: {
+            ...(minPrice !== undefined && {
+              gte: minPrice,
+            }),
+            ...(maxPrice !== undefined && {
+              lte: maxPrice,
+            }),
           },
         });
       }

@@ -1,4 +1,8 @@
-import { infiniteQueryOptions, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  infiniteQueryOptions,
+  useInfiniteQuery,
+  keepPreviousData,
+} from "@tanstack/react-query";
 
 import { PRODUCT_STALE_TIME_MS } from "../constants";
 import type { CatalogQuery } from "../catalogQuery";
@@ -15,6 +19,7 @@ export function infiniteProductsQueryOptions(query: CatalogQuery) {
         page: pageParam,
         query,
       }),
+    placeholderData: keepPreviousData,
     initialPageParam: 1,
 
     getNextPageParam: (lastPage) => {
