@@ -1,6 +1,7 @@
 import { NetworkSimulationControl } from "../networkSimulation/NetworkSimulationControl";
 
 import type { ResultMode } from "../useResultMode";
+import { CacheControl } from "./CacheControl";
 import { ResultModeControl } from "./ResultModeControl";
 
 import styles from "./DemoWorksite.module.css";
@@ -19,6 +20,8 @@ export function DemoWorksite({ view, onViewChange }: DemoWorksiteProps) {
         <ResultModeControl view={view} onChange={onViewChange} />
 
         <NetworkSimulationControl />
+
+        <CacheControl />
       </div>
     </aside>
   );
