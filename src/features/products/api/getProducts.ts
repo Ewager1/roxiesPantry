@@ -1,6 +1,7 @@
 import { graphqlRequest } from "../../../api/graphql";
 import type { ProductPage } from "../types";
 import type { CatalogQuery } from "../catalogQuery";
+import { simulateNetworkDelay } from "../../demo/networkSimulation/networkSimulationDelay";
 
 const PRODUCTS_QUERY = `
   query Products(
@@ -81,6 +82,8 @@ export async function getProducts({
   page,
   query,
 }: GetProductsOptions): Promise<ProductPage> {
+  await simulateNetworkDelay();
+
   const data = await graphqlRequest<ProductsResponse>(PRODUCTS_QUERY, {
     page,
     brands: query.filters.brands,
