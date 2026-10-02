@@ -260,14 +260,17 @@ export const resolvers = {
 
           case "price-high-to-low":
             return [{ price: "desc" as const }, { id: "asc" as const }];
-
           case "rating":
             return [
-              { rating: "desc" as const },
+              {
+                rating: {
+                  sort: "desc" as const,
+                  nulls: "last" as const,
+                },
+              },
               { reviewCount: "desc" as const },
               { id: "asc" as const },
             ];
-
           case "name-ascending":
           default:
             return [{ name: "asc" as const }, { id: "asc" as const }];
