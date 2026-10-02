@@ -6,6 +6,8 @@ import { ProductGrid } from "./ProductGrid";
 
 import { useCatalogQuery } from "../useCatalogQuery";
 
+import styles from "./InifinteProductResults.module.css";
+
 export function InfiniteProductResults() {
   const query = useCatalogQuery();
 
@@ -17,6 +19,7 @@ export function InfiniteProductResults() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isFetching,
   } = useInfiniteProducts(query);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -67,6 +70,12 @@ export function InfiniteProductResults() {
 
   return (
     <>
+      <div className={styles.fetchStatus} aria-live="polite">
+        {isFetching && !isFetchingNextPage && !isPending
+          ? "Updating results..."
+          : "\u00A0"}
+      </div>
+
       <ProductGrid products={products} />
 
       <div ref={loadMoreRef} style={{ height: "1px" }} aria-hidden="true" />

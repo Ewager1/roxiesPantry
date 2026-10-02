@@ -9,6 +9,8 @@ import { ProductPagination } from "./ProductPagination";
 
 import { useCatalogQuery } from "../useCatalogQuery";
 
+import styles from "./PaginatedProductResults.module.css";
+
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
 
@@ -21,7 +23,10 @@ export function PaginatedProductResults() {
 
   const query = useCatalogQuery();
 
-  const { data, isPending, isError, error } = useProducts(page, query);
+  const { data, isPending, isError, error, isFetching } = useProducts(
+    page,
+    query,
+  );
 
   const products = data?.items ?? [];
 
@@ -64,6 +69,9 @@ export function PaginatedProductResults() {
 
   return (
     <>
+      <div className={styles.fetchStatus} aria-live="polite">
+        {isFetching && !isPending ? "Updating results..." : "\u00A0"}
+      </div>
       <ProductGrid products={products} />
 
       {pagination && <ProductPagination pagination={pagination} />}

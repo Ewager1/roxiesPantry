@@ -1,4 +1,5 @@
 import type { Product } from "../types";
+import { formatCurrency } from "../../../utils/formatCurrency";
 import styles from "./ProductCard.module.css";
 
 type ProductCardProps = {
@@ -22,7 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.rating ?? "No rating"} ({product.reviewCount})
       </p>
 
-      <p className={styles.price}>${product.price}</p>
+      <p className={styles.price}>{formatCurrency(product.price)}</p>
     </article>
   );
 }
