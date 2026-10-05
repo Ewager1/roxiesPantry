@@ -3,6 +3,7 @@ import { NetworkSimulationControl } from "../networkSimulation/NetworkSimulation
 import type { ResultMode } from "../useResultMode";
 import { CacheControl } from "./CacheControl";
 import { ResultModeControl } from "./ResultModeControl";
+import { ProductCacheInspector } from "./ProductCacheInspector";
 
 import styles from "./DemoWorksite.module.css";
 
@@ -23,6 +24,7 @@ export function DemoWorksite({ view, onViewChange }: DemoWorksiteProps) {
 
         <CacheControl />
       </div>
+      <ProductCacheInspector />
     </aside>
   );
 }
