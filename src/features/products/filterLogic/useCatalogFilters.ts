@@ -1,18 +1,21 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { removeFacetParams } from "../facetLogic/catalogFacets";
 
 import {
   normalizeFilterValues,
-  type CatalogFilterKey,
+  normalizeSingleFilterValue,
   type CatalogFilters,
+  type MultiCatalogFilterKey,
 } from "./catalogFilters";
+
 import { CATALOG_FILTER_PARAMS } from "../constants";
 
 export function useCatalogFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Memoize normalized filters so unchanged URL state
-  // keeps a stable object reference.
+  // Normalize URL state at the boundary so equivalent URLs
+  // produce stable catalog state and cache keys.
   const filters: CatalogFilters = useMemo(
     () => ({
       brands: normalizeFilterValues(
@@ -23,8 +26,8 @@ export function useCatalogFilters() {
         searchParams.getAll(CATALOG_FILTER_PARAMS.pets),
       ),
 
-      categories: normalizeFilterValues(
-        searchParams.getAll(CATALOG_FILTER_PARAMS.categories),
+      category: normalizeSingleFilterValue(
+        searchParams.get(CATALOG_FILTER_PARAMS.category),
       ),
 
       productTypes: normalizeFilterValues(
@@ -34,7 +37,7 @@ export function useCatalogFilters() {
     [searchParams],
   );
 
-  function toggleFilter(filter: CatalogFilterKey, value: string) {
+  function toggleMultiFilter(filter: MultiCatalogFilterKey, value: string) {
     const param = CATALOG_FILTER_PARAMS[filter];
 
     const nextParams = new URLSearchParams(searchParams);
@@ -47,11 +50,37 @@ export function useCatalogFilters() {
 
     nextParams.delete(param);
 
+    // Facets depend on Category, so changing
+    // Category invalidates all current facet state.
+    removeFacetParams(nextParams);
+
     nextValues.forEach((nextValue) => {
       nextParams.append(param, nextValue);
     });
 
-    // A changed filter may make the current page invalid.
+    nextParams.delete("page");
+
+    setSearchParams(nextParams);
+  }
+
+  function setCategory(category: string | null) {
+    const nextParams = new URLSearchParams(searchParams);
+
+    const normalizedCategory = normalizeSingleFilterValue(category);
+
+    nextParams.delete(CATALOG_FILTER_PARAMS.category);
+
+    if (normalizedCategory) {
+      nextParams.set(CATALOG_FILTER_PARAMS.category, normalizedCategory);
+    }
+
+    // Product Type depends on Category.
+    // Changing the parent invalidates its child selections.
+    nextParams.delete(CATALOG_FILTER_PARAMS.productTypes);
+
+    // Later, category-dependent facet params will also
+    // be cleared here through centralized facet logic.
+
     nextParams.delete("page");
 
     setSearchParams(nextParams);
@@ -59,6 +88,7 @@ export function useCatalogFilters() {
 
   return {
     filters,
-    toggleFilter,
+    toggleMultiFilter,
+    setCategory,
   };
 }

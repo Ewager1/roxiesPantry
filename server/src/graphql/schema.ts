@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { getCatalogFilterContext } from "../catalog/getCatalogFilterContext.js";
 
 import {
   DEFAULT_PAGE_SIZE,
@@ -32,6 +33,24 @@ export const typeDefs = `#graphql
     category: Category!
   }
 
+  type FacetOption {
+    id: ID!
+    name: String!
+    slug: String!
+  }
+
+  type CatalogFacet {
+    id: ID!
+    name: String!
+    slug: String!
+    options: [FacetOption!]!
+  }
+
+  type CatalogFilterContext {
+    productTypes: [ProductType!]!
+    facets: [CatalogFacet!]!
+  }
+
   type Product {
     id: ID!
     name: String!
@@ -59,9 +78,15 @@ export const typeDefs = `#graphql
       search: String
       minPrice: Float
       maxPrice: Float
+      facets: [FacetSelectionInput!]
     ): ProductPage!
 
     catalogFilterOptions: CatalogFilterOptions!
+
+    catalogFilterContext(
+      category: String
+      productTypes: [String!]
+    ): CatalogFilterContext!
   }
 
   type PaginationInfo {
@@ -84,7 +109,17 @@ export const typeDefs = `#graphql
     categories: [Category!]!
     productTypes: [ProductType!]!
   }
+
+  input FacetSelectionInput {
+  facet: String!
+  options: [String!]!
+    }
 `;
+
+type FacetSelectionArg = {
+  facet: string;
+  options: string[];
+};
 
 type ProductsArgs = {
   page?: number;
@@ -97,6 +132,12 @@ type ProductsArgs = {
   search?: string;
   minPrice?: number | null;
   maxPrice?: number | null;
+  facets?: FacetSelectionArg[];
+};
+
+type CatalogFilterContextArgs = {
+  category?: string | null;
+  productTypes?: string[];
 };
 
 // Simple relevance tiers keep search ordering predictable without
@@ -221,6 +262,35 @@ export const resolvers = {
         });
       }
 
+      const facetSelections = (args.facets ?? [])
+        .map((selection) => ({
+          facet: selection.facet.trim(),
+
+          options: [
+            ...new Set(
+              selection.options.map((option) => option.trim()).filter(Boolean),
+            ),
+          ].sort(),
+        }))
+        .filter((selection) => selection.facet && selection.options.length > 0);
+
+      facetSelections.forEach(({ facet, options }) => {
+        filterConditions.push({
+          facetOptions: {
+            some: {
+              facetOption: {
+                facet: {
+                  slug: facet,
+                },
+
+                slug: {
+                  in: options,
+                },
+              },
+            },
+          },
+        });
+      });
       const searchPhrase = args.search?.trim() ?? "";
 
       // Search terms are ANDed together, while each term may match any
@@ -285,6 +355,7 @@ export const resolvers = {
       const where = {
         AND: filterConditions,
       };
+
       const sort = normalizeSort(args.sort);
 
       const orderBy = (() => {
@@ -294,6 +365,7 @@ export const resolvers = {
 
           case "price-high-to-low":
             return [{ price: "desc" as const }, { id: "asc" as const }];
+
           case "rating":
             return [
               {
@@ -305,6 +377,7 @@ export const resolvers = {
               { reviewCount: "desc" as const },
               { id: "asc" as const },
             ];
+
           case "name-ascending":
           default:
             return [{ name: "asc" as const }, { id: "asc" as const }];
@@ -428,6 +501,16 @@ export const resolvers = {
         categories,
         productTypes,
       };
+    },
+
+    catalogFilterContext: async (
+      _parent: unknown,
+      args: CatalogFilterContextArgs,
+    ) => {
+      return getCatalogFilterContext({
+        category: args.category ?? null,
+        productTypes: args.productTypes ?? [],
+      });
     },
   },
 

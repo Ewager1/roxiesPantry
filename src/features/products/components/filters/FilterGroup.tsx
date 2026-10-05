@@ -23,7 +23,7 @@ export function FilterGroup({
         {options.map((option) => (
           <label key={option.id} className={styles.option}>
             <input
-              className={styles.checkbox}
+              className={styles.input}
               type="checkbox"
               checked={selectedValues.includes(option.slug)}
               onChange={() => onToggle(option.slug)}

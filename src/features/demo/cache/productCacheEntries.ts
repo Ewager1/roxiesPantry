@@ -54,8 +54,8 @@ function formatCatalogInputs(query: CatalogQuery): string[] {
     inputs.push(query.filters.pets.join(", "));
   }
 
-  if (query.filters.categories.length > 0) {
-    inputs.push(query.filters.categories.join(", "));
+  if (query.filters.category) {
+    inputs.push(query.filters.category);
   }
 
   if (query.filters.productTypes.length > 0) {
@@ -65,6 +65,9 @@ function formatCatalogInputs(query: CatalogQuery): string[] {
   if (query.filters.brands.length > 0) {
     inputs.push(query.filters.brands.join(", "));
   }
+  Object.entries(query.facets).forEach(([facet, options]) => {
+    inputs.push(`${facet}: ${options.join(", ")}`);
+  });
 
   const priceRange = formatPriceRange(query);
 

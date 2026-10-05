@@ -2,6 +2,7 @@ import { graphqlRequest } from "../../../api/graphql";
 import type { ProductPage } from "../types";
 import type { CatalogQuery } from "../catalogQuery";
 import { simulateNetworkDelay } from "../../demo/networkSimulation/networkSimulationDelay";
+import { toFacetSelectionInputs } from "../facetLogic/catalogFacets";
 
 const PRODUCTS_QUERY = `
   query Products(
@@ -14,6 +15,7 @@ const PRODUCTS_QUERY = `
     $search: String
     $minPrice: Float
     $maxPrice: Float
+    $facets: [FacetSelectionInput!]
   ) {
     products(
       page: $page
@@ -25,6 +27,7 @@ const PRODUCTS_QUERY = `
       search: $search
       minPrice: $minPrice
       maxPrice: $maxPrice
+      facets: $facets
     ) {
       pagination {
         page
@@ -92,8 +95,9 @@ export async function getProducts({
     page,
     brands: query.filters.brands,
     pets: query.filters.pets,
-    categories: query.filters.categories,
+    categories: query.filters.category ? [query.filters.category] : [],
     productTypes: query.filters.productTypes,
+    facets: toFacetSelectionInputs(query.facets),
     sort: query.sort,
     search: query.search,
     minPrice: query.priceRange.min,

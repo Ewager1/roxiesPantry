@@ -1,16 +1,16 @@
 export type CatalogFilters = {
   brands: string[];
   pets: string[];
-  categories: string[];
+  category: string | null;
   productTypes: string[];
 };
 
-export type CatalogFilterKey = keyof CatalogFilters;
+export type MultiCatalogFilterKey = "brands" | "pets" | "productTypes";
 
 export const EMPTY_CATALOG_FILTERS: CatalogFilters = {
   brands: [],
   pets: [],
-  categories: [],
+  category: null,
   productTypes: [],
 };
 
@@ -20,4 +20,12 @@ export function normalizeFilterValues(values: string[]): string[] {
   return [
     ...new Set(values.map((value) => value.trim()).filter(Boolean)),
   ].sort();
+}
+
+export function normalizeSingleFilterValue(
+  value: string | null,
+): string | null {
+  const normalized = value?.trim() ?? "";
+
+  return normalized || null;
 }

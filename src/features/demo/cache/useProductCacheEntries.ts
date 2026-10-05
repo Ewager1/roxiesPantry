@@ -26,15 +26,46 @@ export function useProductCacheEntries(): ProductCacheEntry[] {
   useEffect(() => {
     const queryCache = queryClient.getQueryCache();
 
-    function updateEntries() {
-      setEntries(readEntries());
+    let isActive = true;
+    let updateScheduled = false;
+
+    function scheduleUpdate() {
+      // QueryCache notifications can happen while another
+      // component is rendering. Defer the React state update
+      // until the current render has completed.
+      if (updateScheduled) {
+        return;
+      }
+
+      updateScheduled = true;
+
+      queueMicrotask(() => {
+        updateScheduled = false;
+
+        if (!isActive) {
+          return;
+        }
+
+        setEntries(readEntries());
+      });
     }
 
-    const unsubscribe = queryCache.subscribe(updateEntries);
+    const unsubscribe = queryCache.subscribe((event) => {
+      // The inspector only represents product-result
+      // queries. Ignore catalog metadata and other caches.
+      if (event.query.queryKey[0] !== "products") {
+        return;
+      }
 
-    updateEntries();
+      scheduleUpdate();
+    });
 
-    return unsubscribe;
+    scheduleUpdate();
+
+    return () => {
+      isActive = false;
+      unsubscribe();
+    };
   }, [queryClient, readEntries]);
 
   return entries;
