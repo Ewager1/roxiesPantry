@@ -2,6 +2,7 @@ import { DemoWorksite } from "../features/demo/components/DemoWorksite";
 import { useResultMode } from "../features/demo/useResultMode";
 
 import { CatalogSearchInput } from "../features/products/components/CatalogSearchInput";
+import { ShareCatalogButton } from "../features/products/share/components/ShareCatalogButton";
 import { CatalogSortSelect } from "../features/products/components/CatalogSortSelect";
 import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
 import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
@@ -33,6 +34,7 @@ export function ProductsPage() {
           <section className={styles.results}>
             <div className={styles.searchBar}>
               <CatalogSearchInput />
+              <ShareCatalogButton />
             </div>
 
             <div className={styles.resultsToolbar}>
