@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { useCatalogFilterOptions } from "../../api/useCatalogFilterOptions";
 import { useCatalogFilters } from "../../filterLogic/useCatalogFilters";
 
@@ -6,7 +8,7 @@ import { PriceRangeFilter } from "./PriceRangeFilter";
 
 import styles from "./ProductFilters.module.css";
 
-export function ProductFilters() {
+function ProductFiltersComponent() {
   const { data, isPending, isError } = useCatalogFilterOptions();
 
   const { filters, toggleFilter } = useCatalogFilters();
@@ -53,3 +55,5 @@ export function ProductFilters() {
     </aside>
   );
 }
+
+export const ProductFilters = memo(ProductFiltersComponent);
