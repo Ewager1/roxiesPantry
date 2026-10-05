@@ -1,12 +1,10 @@
 import { useEffect, useRef } from "react";
 
 import { useInfiniteProducts } from "../api/useInfiniteProducts";
-
-import { ProductGrid } from "./ProductGrid";
-
 import { useCatalogQuery } from "../useCatalogQuery";
 
-import styles from "./InifinteProductResults.module.css";
+import { CatalogStatusBar } from "./CatalogStatusBar";
+import { ProductGrid } from "./ProductGrid";
 
 export function InfiniteProductResults() {
   const query = useCatalogQuery();
@@ -25,6 +23,8 @@ export function InfiniteProductResults() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const products = data?.pages.flatMap((page) => page.items) ?? [];
+
+  const totalItems = data?.pages[0]?.pagination.totalItems ?? 0;
 
   useEffect(() => {
     const sentinel = loadMoreRef.current;
@@ -51,10 +51,6 @@ export function InfiniteProductResults() {
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (isPending) {
-    return <p>Loading products...</p>;
-  }
-
   if (isError) {
     return (
       <p>
@@ -64,25 +60,30 @@ export function InfiniteProductResults() {
     );
   }
 
-  if (products.length === 0) {
-    return <p>No products found.</p>;
+  if (isPending) {
+    return <CatalogStatusBar totalItems={null} isPending />;
   }
 
   return (
     <>
-      {isFetching && !isFetchingNextPage && !isPending && (
-        <div className={styles.fetchStatus} aria-live="polite">
-          Updating results...
-        </div>
+      <CatalogStatusBar
+        totalItems={totalItems}
+        isUpdating={isFetching && !isFetchingNextPage}
+      />
+
+      {products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
+        <>
+          <ProductGrid products={products} />
+
+          <div ref={loadMoreRef} style={{ height: "1px" }} aria-hidden="true" />
+
+          {isFetchingNextPage && <p>Loading more products...</p>}
+
+          {!hasNextPage && <p>You’ve reached the end.</p>}
+        </>
       )}
-
-      <ProductGrid products={products} />
-
-      <div ref={loadMoreRef} style={{ height: "1px" }} aria-hidden="true" />
-
-      {isFetchingNextPage && <p>Loading more products...</p>}
-
-      {!hasNextPage && <p>You’ve reached the end.</p>}
     </>
   );
 }

@@ -1,0 +1,118 @@
+.statusBar {
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: var(--space-3);
+
+  min-height: 2.75rem;
+  margin-bottom: var(--space-3);
+
+  padding: 0 var(--space-1);
+}
+
+.resultCount {
+  color: var(--color-text);
+
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+
+  white-space: nowrap;
+}
+
+.statusContent {
+  min-width: 0;
+}
+
+.fetchStatus {
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+}
+
+.chipScroller {
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  min-width: 0;
+
+  padding-bottom: var(--space-1);
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  white-space: nowrap;
+
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+}
+
+.chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  padding: var(--space-1) var(--space-3);
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+
+  font: inherit;
+  font-size: var(--font-size-sm);
+
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--color-primary);
+
+  background-color: var(--color-surface-alt);
+}
+
+.chip:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+.chipRemove {
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+.clearAll {
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+  color: var(--color-primary);
+
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.clearAll:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.clearAll:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}

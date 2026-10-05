@@ -4,12 +4,11 @@ import { useSearchParams } from "react-router";
 
 import { productQueryOptions, useProducts } from "../api/useProducts";
 
-import { ProductGrid } from "./ProductGrid";
-import { ProductPagination } from "./ProductPagination";
-
 import { useCatalogQuery } from "../useCatalogQuery";
 
-import styles from "./PaginatedProductResults.module.css";
+import { CatalogStatusBar } from "./CatalogStatusBar";
+import { ProductGrid } from "./ProductGrid";
+import { ProductPagination } from "./ProductPagination";
 
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
@@ -18,7 +17,6 @@ export function PaginatedProductResults() {
 
   const pageParam = Number(searchParams.get("page"));
 
-  // Guard against invalid page values manually entered into the URL.
   const page = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const query = useCatalogQuery();
@@ -32,7 +30,6 @@ export function PaginatedProductResults() {
 
   const pagination = data?.pagination;
 
-  // Return the user to the top when navigating between result pages.
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -40,7 +37,6 @@ export function PaginatedProductResults() {
     });
   }, [page]);
 
-  // Warm the cache with the next page when one is available.
   useEffect(() => {
     if (!pagination?.hasNextPage) {
       return;
@@ -55,28 +51,30 @@ export function PaginatedProductResults() {
       });
   }, [pagination?.page, pagination?.hasNextPage, queryClient, query]);
 
-  if (isPending) {
-    return <p>Loading products...</p>;
-  }
-
   if (isError) {
     return <p>Error: {error.message}</p>;
   }
 
-  if (products.length === 0) {
-    return <p>No products found.</p>;
+  if (isPending) {
+    return <CatalogStatusBar totalItems={null} isPending />;
   }
 
   return (
     <>
-      {isFetching && !isPending && (
-        <div className={styles.fetchStatus} aria-live="polite">
-          Updating results...
-        </div>
-      )}
-      <ProductGrid products={products} />
+      <CatalogStatusBar
+        totalItems={pagination?.totalItems ?? 0}
+        isUpdating={isFetching}
+      />
 
-      {pagination && <ProductPagination pagination={pagination} />}
+      {products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
+        <>
+          <ProductGrid products={products} />
+
+          {pagination && <ProductPagination pagination={pagination} />}
+        </>
+      )}
     </>
   );
 }
