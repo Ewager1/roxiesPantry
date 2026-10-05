@@ -70,11 +70,11 @@ export function InfiniteProductResults() {
 
   return (
     <>
-      <div className={styles.fetchStatus} aria-live="polite">
-        {isFetching && !isFetchingNextPage && !isPending
-          ? "Updating results..."
-          : "\u00A0"}
-      </div>
+      {isFetching && !isFetchingNextPage && !isPending && (
+        <div className={styles.fetchStatus} aria-live="polite">
+          Updating results...
+        </div>
+      )}
 
       <ProductGrid products={products} />
 

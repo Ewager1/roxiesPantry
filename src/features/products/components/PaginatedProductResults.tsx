@@ -69,9 +69,11 @@ export function PaginatedProductResults() {
 
   return (
     <>
-      <div className={styles.fetchStatus} aria-live="polite">
-        {isFetching && !isPending ? "Updating results..." : "\u00A0"}
-      </div>
+      {isFetching && !isPending && (
+        <div className={styles.fetchStatus} aria-live="polite">
+          Updating results...
+        </div>
+      )}
       <ProductGrid products={products} />
 
       {pagination && <ProductPagination pagination={pagination} />}

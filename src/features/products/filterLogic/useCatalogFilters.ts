@@ -60,7 +60,9 @@ export function useCatalogFilters() {
 
     nextParams.delete("page");
 
-    setSearchParams(nextParams);
+    setSearchParams(nextParams, {
+      preventScrollReset: true,
+    });
   }
 
   function setCategory(category: string | null) {

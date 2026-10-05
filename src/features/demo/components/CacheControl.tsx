@@ -14,18 +14,12 @@ export function CacheControl() {
   }
 
   return (
-    <div className={styles.controlGroup}>
-      <span className={styles.controlLabel}>Cache</span>
-
-      <div className={styles.toggle}>
-        <button
-          className={styles.toggleButton}
-          type="button"
-          onClick={resetProductCache}
-        >
-          Reset Cache
-        </button>
-      </div>
-    </div>
+    <button
+      className={styles.cacheButton}
+      type="button"
+      onClick={resetProductCache}
+    >
+      Reset Cache
+    </button>
   );
 }

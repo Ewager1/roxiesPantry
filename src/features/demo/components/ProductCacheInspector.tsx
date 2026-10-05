@@ -68,15 +68,7 @@ export function ProductCacheInspector() {
   const infiniteEntries = entries.filter((entry) => entry.type === "Infinite");
 
   return (
-    <section className={styles.cacheInspector}>
-      <div className={styles.cacheHeader}>
-        <h3 className={styles.cacheTitle}>Product Query Cache</h3>
-
-        <span className={styles.cacheCount}>
-          {entries.length} {entries.length === 1 ? "entry" : "entries"}
-        </span>
-      </div>
-
+    <div className={styles.cacheInspector}>
       <div className={styles.cacheColumns}>
         <CacheSection
           title="Paginated Cache"
@@ -90,6 +82,6 @@ export function ProductCacheInspector() {
           entries={infiniteEntries}
         />
       </div>
-    </section>
+    </div>
   );
 }

@@ -2,13 +2,13 @@ import { memo } from "react";
 
 import { useCatalogFilterContext } from "../../api/useCatalogFilterContext";
 import { useCatalogFilterOptions } from "../../api/useCatalogFilterOptions";
-import { useCatalogFilters } from "../../filterLogic/useCatalogFilters";
 import { useCatalogFacets } from "../../facetLogic/useCatalogFacets";
+import { useCatalogFilters } from "../../filterLogic/useCatalogFilters";
+import { useCatalogHierarchyCanonicalization } from "../../filterLogic/useCatalogHierarchyCannonicalization";
+import { PriceRangeFilter } from "./PriceRangeFilter";
 
 import { FilterGroup } from "./FilterGroup";
-import { PriceRangeFilter } from "./PriceRangeFilter";
 import { SingleSelectFilterGroup } from "./SingleSelectFilterGroup";
-import { useCatalogHierarchyCanonicalization } from "../../filterLogic/useCatalogHierarchyCannonicalization";
 
 import styles from "./ProductFilters.module.css";
 
@@ -34,68 +34,101 @@ function ProductFiltersComponent() {
   });
 
   if (isPending) {
-    return <p>Loading filters...</p>;
+    return (
+      <aside className={styles.filters} aria-label="Product filters">
+        <section className={styles.filterCard}>
+          <p className={styles.status}>Loading filters...</p>
+        </section>
+      </aside>
+    );
   }
 
-  if (isError) {
-    return <p>Unable to load filters.</p>;
+  if (isError || !data) {
+    return (
+      <aside className={styles.filters} aria-label="Product filters">
+        <section className={styles.filterCard}>
+          <p className={styles.status}>Unable to load filters.</p>
+        </section>
+      </aside>
+    );
   }
+
+  const selectedCategoryName = filters.category
+    ? data.categories.find((category) => category.slug === filters.category)
+        ?.name ?? filters.category
+    : null;
 
   return (
     <aside className={styles.filters} aria-label="Product filters">
-      <SingleSelectFilterGroup
-        label="Category"
-        name="category"
-        allLabel="All Categories"
-        options={data.categories}
-        selectedValue={filters.category}
-        onChange={setCategory}
-      />
+      <section className={styles.filterCard}>
+        <PriceRangeFilter />
+      </section>
 
-      <FilterGroup
-        label="Pet"
-        options={data.pets}
-        selectedValues={filters.pets}
-        onToggle={(pet) => toggleMultiFilter("pets", pet)}
-      />
-
-      <FilterGroup
-        label="Brand"
-        options={data.brands}
-        selectedValues={filters.brands}
-        onToggle={(brand) => toggleMultiFilter("brands", brand)}
-      />
-
-      {filters.category && (
-        <>
-          {isContextPending && <p>Loading product types...</p>}
-
-          {isContextError && <p>Unable to load product types.</p>}
-
-          {filterContext && !isContextPending && !isContextError && (
-            <FilterGroup
-              label="Product Type"
-              options={filterContext.productTypes}
-              selectedValues={filters.productTypes}
-              onToggle={(productType) =>
-                toggleMultiFilter("productTypes", productType)
-              }
-            />
-          )}
-        </>
-      )}
-
-      {filterContext?.facets.map((facet) => (
+      <section className={styles.filterCard}>
         <FilterGroup
-          key={facet.id}
-          label={facet.name}
-          options={facet.options}
-          selectedValues={facets[facet.slug] ?? []}
-          onToggle={(option) => toggleFacetOption(facet.slug, option)}
+          label="Pet"
+          options={data.pets}
+          selectedValues={filters.pets}
+          onToggle={(pet) => toggleMultiFilter("pets", pet)}
         />
-      ))}
+      </section>
 
-      <PriceRangeFilter />
+      <section className={styles.filterCard}>
+        <FilterGroup
+          label="Brand"
+          options={data.brands}
+          selectedValues={filters.brands}
+          onToggle={(brand) => toggleMultiFilter("brands", brand)}
+        />
+      </section>
+
+      <section className={styles.filterCard}>
+        <SingleSelectFilterGroup
+          label="Category"
+          name="category"
+          options={data.categories}
+          selectedValue={filters.category}
+          allLabel="All Categories"
+          onChange={setCategory}
+        />
+
+        {filters.category && (
+          <div className={styles.categoryDetails}>
+            <h2 className={styles.categoryName}>{selectedCategoryName}</h2>
+
+            {isContextPending && (
+              <p className={styles.status}>Loading options...</p>
+            )}
+
+            {isContextError && (
+              <p className={styles.status}>Unable to load options.</p>
+            )}
+
+            {filterContext && (
+              <div className={styles.detailGroups}>
+                <FilterGroup
+                  label="Product Type"
+                  options={filterContext.productTypes}
+                  selectedValues={filters.productTypes}
+                  onToggle={(productType) =>
+                    toggleMultiFilter("productTypes", productType)
+                  }
+                />
+
+                {filterContext.facets.map((facet) => (
+                  <FilterGroup
+                    key={facet.id}
+                    label={facet.name}
+                    options={facet.options}
+                    selectedValues={facets[facet.slug] ?? []}
+                    onToggle={(option) => toggleFacetOption(facet.slug, option)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
     </aside>
   );
 }
