@@ -6,6 +6,9 @@ import { useCatalogQuery } from "../useCatalogQuery";
 import { CatalogStatusBar } from "./CatalogStatusBar";
 import { ProductGrid } from "./ProductGrid";
 import { CatalogEmptyState } from "./resultStates/CatalogEmptyState";
+import { ReturnToTopButton } from "./ReturnToTopButton";
+
+import styles from "./InifiniteProductResults.module.css";
 
 export function InfiniteProductResults() {
   const query = useCatalogQuery();
@@ -59,11 +62,14 @@ export function InfiniteProductResults() {
 
           <div ref={loadMoreRef} style={{ height: "1px" }} aria-hidden="true" />
 
-          {isFetchingNextPage && <p>Loading more products...</p>}
-
-          {!hasNextPage && <p>You’ve reached the end.</p>}
+          {isFetchingNextPage && (
+            <p className={styles.loadMoreStatus} aria-live="polite">
+              Loading more products...
+            </p>
+          )}
         </>
       )}
+      <ReturnToTopButton />
     </>
   );
 }

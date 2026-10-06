@@ -1,0 +1,8 @@
+.loadMoreStatus {
+  margin: var(--space-6) 0 0;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
