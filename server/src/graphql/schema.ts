@@ -26,6 +26,13 @@ export const typeDefs = `#graphql
     slug: String!
   }
 
+  type CatalogFilterCountOption {
+  id: ID!
+  name: String!
+  slug: String!
+  productCount: Int!
+  }
+
   type ProductType {
     id: ID!
     name: String!
@@ -103,17 +110,17 @@ export const typeDefs = `#graphql
     pagination: PaginationInfo!
   }
 
-  type CatalogFilterOptions {
-    brands: [Brand!]!
-    pets: [Pet!]!
-    categories: [Category!]!
-    productTypes: [ProductType!]!
-  }
+type CatalogFilterOptions {
+  brands: [CatalogFilterCountOption!]!
+  pets: [CatalogFilterCountOption!]!
+  categories: [CatalogFilterCountOption!]!
+  productTypes: [ProductType!]!
+}
 
   input FacetSelectionInput {
-  facet: String!
-  options: [String!]!
-    }
+    facet: String!
+    options: [String!]!
+  }
 `;
 
 type FacetSelectionArg = {
@@ -291,6 +298,7 @@ export const resolvers = {
           },
         });
       });
+
       const searchPhrase = args.search?.trim() ?? "";
 
       // Search terms are ANDed together, while each term may match any
@@ -465,7 +473,15 @@ export const resolvers = {
     },
 
     catalogFilterOptions: async () => {
-      const [brands, pets, categories, productTypes] = await Promise.all([
+      const [
+        brands,
+        pets,
+        categories,
+        productTypes,
+        productTypeCounts,
+        brandCounts,
+        petCounts,
+      ] = await Promise.all([
         prisma.brand.findMany({
           orderBy: {
             name: "asc",
@@ -493,12 +509,82 @@ export const resolvers = {
             category: true,
           },
         }),
+
+        prisma.product.groupBy({
+          by: ["productTypeId"],
+
+          _count: {
+            _all: true,
+          },
+        }),
+
+        prisma.product.groupBy({
+          by: ["brandId"],
+
+          _count: {
+            _all: true,
+          },
+        }),
+
+        prisma.product.groupBy({
+          by: ["petId"],
+
+          _count: {
+            _all: true,
+          },
+        }),
       ]);
 
+      const countByProductTypeId = new Map(
+        productTypeCounts.map((count) => [
+          count.productTypeId,
+          count._count._all,
+        ]),
+      );
+
+      const countByBrandId = new Map(
+        brandCounts.map((count) => [count.brandId, count._count._all]),
+      );
+
+      const countByPetId = new Map(
+        petCounts.map((count) => [count.petId, count._count._all]),
+      );
+
+      const categoryCounts = new Map<string, number>();
+
+      productTypes.forEach((productType) => {
+        const currentCount = categoryCounts.get(productType.category.id) ?? 0;
+
+        const productCount = countByProductTypeId.get(productType.id) ?? 0;
+
+        categoryCounts.set(
+          productType.category.id,
+          currentCount + productCount,
+        );
+      });
+
+      const categoriesWithCounts = categories.map((category) => ({
+        ...category,
+
+        productCount: categoryCounts.get(category.id) ?? 0,
+      }));
+
+      const brandsWithCounts = brands.map((brand) => ({
+        ...brand,
+
+        productCount: countByBrandId.get(brand.id) ?? 0,
+      }));
+
+      const petsWithCounts = pets.map((pet) => ({
+        ...pet,
+
+        productCount: countByPetId.get(pet.id) ?? 0,
+      }));
+
       return {
-        brands,
-        pets,
-        categories,
+        brands: brandsWithCounts,
+        pets: petsWithCounts,
+        categories: categoriesWithCounts,
         productTypes,
       };
     },

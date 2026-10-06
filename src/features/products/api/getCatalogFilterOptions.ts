@@ -1,16 +1,20 @@
 import { graphqlRequest } from "../../../api/graphql";
 
-// Responsible for getting the filter options for the user
 export type CatalogFilterOption = {
   id: string;
   name: string;
   slug: string;
+  productCount?: number;
+};
+
+export type CatalogCountFilterOption = CatalogFilterOption & {
+  productCount: number;
 };
 
 export type CatalogFilterOptions = {
-  brands: CatalogFilterOption[];
-  pets: CatalogFilterOption[];
-  categories: CatalogFilterOption[];
+  brands: CatalogCountFilterOption[];
+  pets: CatalogCountFilterOption[];
+  categories: CatalogCountFilterOption[];
   productTypes: CatalogFilterOption[];
 };
 
@@ -25,18 +29,21 @@ const CATALOG_FILTER_OPTIONS_QUERY = `
         id
         name
         slug
+        productCount
       }
 
       pets {
         id
         name
         slug
+        productCount
       }
 
       categories {
         id
         name
         slug
+        productCount
       }
 
       productTypes {

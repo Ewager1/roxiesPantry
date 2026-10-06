@@ -17,17 +17,17 @@
 .options {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
 
   gap: var(--space-2);
 }
 
 .option {
-  display: inline-flex;
+  display: flex;
   align-items: center;
 
   gap: var(--space-2);
-  width: auto;
+  width: 100%;
 
   cursor: pointer;
 }
@@ -35,4 +35,23 @@
 .input {
   flex: 0 0 auto;
   margin: 0;
+}
+
+.optionContent {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--space-3);
+
+  min-width: 0;
+}
+
+.optionCount {
+  flex: 0 0 auto;
+
+  color: var(--color-text-muted);
+
+  font-size: var(--font-size-sm);
 }

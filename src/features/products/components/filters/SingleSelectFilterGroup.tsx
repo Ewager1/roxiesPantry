@@ -1,11 +1,10 @@
-import type { CatalogFilterOption } from "../../api/getCatalogFilterOptions";
-
+import type { CatalogCountFilterOption } from "../../api/getCatalogFilterOptions";
 import styles from "./FilterGroup.module.css";
 
 type SingleSelectFilterGroupProps = {
   label: string;
   name: string;
-  options: CatalogFilterOption[];
+  options: CatalogCountFilterOption[];
   selectedValue: string | null;
   allLabel: string;
   onChange: (value: string | null) => void;
@@ -33,7 +32,9 @@ export function SingleSelectFilterGroup({
             onChange={() => onChange(null)}
           />
 
-          <span>{allLabel}</span>
+          <span className={styles.optionContent}>
+            <span>{allLabel}</span>
+          </span>
         </label>
 
         {options.map((option) => (
@@ -46,7 +47,13 @@ export function SingleSelectFilterGroup({
               onChange={() => onChange(option.slug)}
             />
 
-            <span>{option.name}</span>
+            <span className={styles.optionContent}>
+              <span>{option.name}</span>
+
+              <span className={styles.optionCount}>
+                {option.productCount.toLocaleString()}
+              </span>
+            </span>
           </label>
         ))}
       </div>

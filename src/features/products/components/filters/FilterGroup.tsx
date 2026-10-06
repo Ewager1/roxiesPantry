@@ -29,7 +29,15 @@ export function FilterGroup({
               onChange={() => onToggle(option.slug)}
             />
 
-            <span>{option.name}</span>
+            <span className={styles.optionContent}>
+              <span>{option.name}</span>
+
+              {option.productCount !== undefined && (
+                <span className={styles.optionCount}>
+                  {option.productCount.toLocaleString()}
+                </span>
+              )}
+            </span>
           </label>
         ))}
       </div>
