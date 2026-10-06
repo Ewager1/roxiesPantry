@@ -49,9 +49,11 @@ export function useCatalogHierarchyCanonicalization({
         nextParams.delete(CATALOG_FILTER_PARAMS.category);
       }
 
-      nextParams.delete("page");
-
+      // Only reset pagination if hierarchy cleanup
+      // actually changed the catalog state.
       if (nextParams.toString() !== searchParams.toString()) {
+        nextParams.delete("page");
+
         setSearchParams(nextParams, {
           replace: true,
         });
