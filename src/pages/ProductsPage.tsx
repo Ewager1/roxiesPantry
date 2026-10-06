@@ -7,6 +7,7 @@ import { InfiniteProductResults } from "../features/products/components/Infinite
 import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
 import { ProductFilters } from "../features/products/components/filters/ProductFilters";
 import { ShareCatalogButton } from "../features/products/share/components/ShareCatalogButton";
+import { CatalogResultsBoundary } from "../features/products/components/resultStates/CatalogResultsBoundary";
 
 import { useCatalogQuery } from "../features/products/useCatalogQuery";
 
@@ -46,11 +47,13 @@ export function ProductsPage() {
           <ProductFilters />
 
           <section className={styles.results}>
-            {view === "infinite" ? (
-              <InfiniteProductResults />
-            ) : (
-              <PaginatedProductResults />
-            )}
+            <CatalogResultsBoundary>
+              {view === "infinite" ? (
+                <InfiniteProductResults />
+              ) : (
+                <PaginatedProductResults />
+              )}
+            </CatalogResultsBoundary>
           </section>
         </div>
       </main>

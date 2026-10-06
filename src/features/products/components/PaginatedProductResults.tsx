@@ -9,6 +9,7 @@ import { useCatalogQuery } from "../useCatalogQuery";
 import { CatalogStatusBar } from "./CatalogStatusBar";
 import { ProductGrid } from "./ProductGrid";
 import { ProductPagination } from "./ProductPagination";
+import { CatalogEmptyState } from "./resultStates/CatalogEmptyState";
 
 export function PaginatedProductResults() {
   const [searchParams] = useSearchParams();
@@ -21,14 +22,10 @@ export function PaginatedProductResults() {
 
   const query = useCatalogQuery();
 
-  const { data, isPending, isError, error, isFetching } = useProducts(
-    page,
-    query,
-  );
+  const { data, isFetching } = useProducts(page, query);
 
-  const products = data?.items ?? [];
-
-  const pagination = data?.pagination;
+  const products = data.items;
+  const pagination = data.pagination;
 
   useEffect(() => {
     window.scrollTo({
@@ -38,7 +35,7 @@ export function PaginatedProductResults() {
   }, [page]);
 
   useEffect(() => {
-    if (!pagination?.hasNextPage) {
+    if (!pagination.hasNextPage) {
       return;
     }
 
@@ -49,30 +46,22 @@ export function PaginatedProductResults() {
       .catch((error) => {
         console.error("Product prefetch failed:", error);
       });
-  }, [pagination?.page, pagination?.hasNextPage, queryClient, query]);
-
-  if (isError) {
-    return <p>Error: {error.message}</p>;
-  }
-
-  if (isPending) {
-    return <CatalogStatusBar totalItems={null} isPending />;
-  }
+  }, [pagination.page, pagination.hasNextPage, queryClient, query]);
 
   return (
     <>
       <CatalogStatusBar
-        totalItems={pagination?.totalItems ?? 0}
+        totalItems={pagination.totalItems}
         isUpdating={isFetching}
       />
 
       {products.length === 0 ? (
-        <p>No products found.</p>
+        <CatalogEmptyState />
       ) : (
         <>
           <ProductGrid products={products} />
 
-          {pagination && <ProductPagination pagination={pagination} />}
+          <ProductPagination pagination={pagination} />
         </>
       )}
     </>

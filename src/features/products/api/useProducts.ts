@@ -1,8 +1,4 @@
-import {
-  keepPreviousData,
-  queryOptions,
-  useQuery,
-} from "@tanstack/react-query";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 
 import { PRODUCT_STALE_TIME_MS } from "../constants";
 import type { CatalogQuery } from "../catalogQuery";
@@ -20,11 +16,10 @@ export function productQueryOptions(page: number, query: CatalogQuery) {
         query,
       }),
 
-    placeholderData: keepPreviousData,
     staleTime: PRODUCT_STALE_TIME_MS,
   });
 }
 
 export function useProducts(page: number, query: CatalogQuery) {
-  return useQuery(productQueryOptions(page, query));
+  return useSuspenseQuery(productQueryOptions(page, query));
 }

@@ -1,7 +1,6 @@
 import {
   infiniteQueryOptions,
-  useInfiniteQuery,
-  keepPreviousData,
+  useSuspenseInfiniteQuery,
 } from "@tanstack/react-query";
 
 import { PRODUCT_STALE_TIME_MS } from "../constants";
@@ -19,7 +18,7 @@ export function infiniteProductsQueryOptions(query: CatalogQuery) {
         page: pageParam,
         query,
       }),
-    placeholderData: keepPreviousData,
+
     initialPageParam: 1,
 
     getNextPageParam: (lastPage) => {
@@ -35,5 +34,5 @@ export function infiniteProductsQueryOptions(query: CatalogQuery) {
 }
 
 export function useInfiniteProducts(query: CatalogQuery) {
-  return useInfiniteQuery(infiniteProductsQueryOptions(query));
+  return useSuspenseInfiniteQuery(infiniteProductsQueryOptions(query));
 }

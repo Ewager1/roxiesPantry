@@ -5,26 +5,19 @@ import { useCatalogQuery } from "../useCatalogQuery";
 
 import { CatalogStatusBar } from "./CatalogStatusBar";
 import { ProductGrid } from "./ProductGrid";
+import { CatalogEmptyState } from "./resultStates/CatalogEmptyState";
 
 export function InfiniteProductResults() {
   const query = useCatalogQuery();
 
-  const {
-    data,
-    isPending,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isFetching,
-  } = useInfiniteProducts(query);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
+    useInfiniteProducts(query);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const products = data?.pages.flatMap((page) => page.items) ?? [];
+  const products = data.pages.flatMap((page) => page.items);
 
-  const totalItems = data?.pages[0]?.pagination.totalItems ?? 0;
+  const totalItems = data.pages[0]?.pagination.totalItems ?? 0;
 
   useEffect(() => {
     const sentinel = loadMoreRef.current;
@@ -51,19 +44,6 @@ export function InfiniteProductResults() {
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  if (isError) {
-    return (
-      <p>
-        Failed to load products:{" "}
-        {error instanceof Error ? error.message : "Unknown error"}
-      </p>
-    );
-  }
-
-  if (isPending) {
-    return <CatalogStatusBar totalItems={null} isPending />;
-  }
-
   return (
     <>
       <CatalogStatusBar
@@ -72,7 +52,7 @@ export function InfiniteProductResults() {
       />
 
       {products.length === 0 ? (
-        <p>No products found.</p>
+        <CatalogEmptyState />
       ) : (
         <>
           <ProductGrid products={products} />

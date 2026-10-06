@@ -1,5 +1,5 @@
-import { useActiveCatalogFilters } from "../filterLogic/useActivityCatalogFilters";
 import { useDelayedBoolean } from "../../../hooks/useDelayedBoolean";
+import { useActiveCatalogFilters } from "../filterLogic/useActivityCatalogFilters";
 
 import styles from "./CatalogStatusBar.module.css";
 
@@ -16,6 +16,7 @@ export function CatalogStatusBar({
 }: CatalogStatusBarProps) {
   const { activeFilters, clearAllFilters } = useActiveCatalogFilters();
 
+  const showPending = useDelayedBoolean(isPending, 200);
   const showUpdating = useDelayedBoolean(isUpdating, 200);
 
   const hasFilters = activeFilters.length > 0;
@@ -32,7 +33,9 @@ export function CatalogStatusBar({
 
       <div className={styles.statusContent}>
         {isPending ? (
-          <span className={styles.fetchStatus}>Loading products...</span>
+          showPending ? (
+            <span className={styles.fetchStatus}>Loading products...</span>
+          ) : null
         ) : showUpdating ? (
           <span className={styles.fetchStatus}>Updating results...</span>
         ) : hasFilters ? (
@@ -56,7 +59,7 @@ export function CatalogStatusBar({
         ) : null}
       </div>
 
-      {!isPending && !isUpdating && hasFilters && (
+      {!isPending && !showUpdating && hasFilters && (
         <button
           type="button"
           className={styles.clearAll}
