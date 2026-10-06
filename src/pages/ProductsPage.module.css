@@ -3,12 +3,38 @@
   max-width: var(--max-width-content);
 
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4) var(--space-12);
+  padding: var(--space-0) var(--space-4) var(--space-12);
+}
+
+.brandMasthead {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: var(--space-4);
+
+  transform: translateY(var(--space-8));
+}
+
+.brand {
+  margin: 0;
+
+  line-height: 0;
+}
+
+.logo {
+  display: block;
+
+  width: clamp(15rem, 28vw, 20rem);
+  max-width: 100%;
+  height: auto;
 }
 
 .catalogHeader {
   margin-bottom: var(--space-4);
-  padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
 
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -17,31 +43,11 @@
   box-shadow: var(--shadow-sm);
 }
 
-.headerTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: var(--space-4);
-}
-
-.header {
-  min-width: 0;
-}
-
-.title {
-  margin: 0;
-
-  font-size: var(--font-size-3xl);
-}
-
 .searchControls {
   display: flex;
   align-items: flex-end;
 
-  gap: var(--space-5);
-
-  margin-top: var(--space-4);
+  gap: var(--space-4);
 }
 
 .searchControl {
@@ -49,7 +55,8 @@
   min-width: 0;
 }
 
-.sortControl {
+.sortControl,
+.shareControl {
   flex: 0 0 auto;
 }
 
