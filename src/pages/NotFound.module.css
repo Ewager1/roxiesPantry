@@ -1,0 +1,87 @@
+.page {
+  display: grid;
+  place-items: center;
+
+  min-height: 100vh;
+
+  padding: var(--space-8) var(--space-4);
+}
+
+.content {
+  width: 100%;
+  max-width: 38rem;
+
+  padding: var(--space-8);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+
+  background-color: var(--color-surface);
+
+  box-shadow: var(--shadow-md);
+
+  text-align: center;
+}
+
+.image {
+  display: block;
+
+  width: min(100%, 24rem);
+  height: auto;
+
+  margin: 0 auto var(--space-4);
+}
+
+.errorCode {
+  margin: 0 0 var(--space-2);
+
+  color: var(--color-primary);
+
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+
+  letter-spacing: 0.08em;
+}
+
+.title {
+  margin: 0;
+
+  font-size: var(--font-size-2xl);
+}
+
+.message {
+  margin: var(--space-3) auto var(--space-6);
+
+  color: var(--color-text-muted);
+}
+
+.catalogButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 2.75rem;
+
+  padding: var(--space-2) var(--space-5);
+
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.catalogButton:hover {
+  border-color: var(--color-primary-hover);
+
+  background-color: var(--color-primary-hover);
+  color: var(--color-text-inverse);
+}
+
+.catalogButton:focus-visible {
+  outline: 3px solid var(--color-secondary);
+  outline-offset: 2px;
+}
