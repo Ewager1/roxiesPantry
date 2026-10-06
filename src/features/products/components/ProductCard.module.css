@@ -40,8 +40,29 @@
 }
 
 .rating {
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  min-height: 1rem;
+
   font-size: var(--font-size-sm);
+}
+
+.ratingValue {
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+
+.reviewCount,
+.noRating {
   color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.noRating {
+  min-height: 1rem;
 }
 
 .price {

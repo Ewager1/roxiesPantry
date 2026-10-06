@@ -1,5 +1,8 @@
 import type { Product } from "../types";
 import { formatCurrency } from "../../../utils/formatCurrency";
+
+import { RatingStars } from "./RatingStars";
+
 import styles from "./ProductCard.module.css";
 
 type ProductCardProps = {
@@ -19,9 +22,21 @@ export function ProductCard({ product }: ProductCardProps) {
 
       <h2 className={styles.name}>{product.name}</h2>
 
-      <p className={styles.rating}>
-        {product.rating ?? "No rating"} ({product.reviewCount})
-      </p>
+      {product.rating !== null ? (
+        <div className={styles.rating}>
+          <RatingStars rating={product.rating} />
+
+          <span className={styles.ratingValue}>
+            {product.rating.toFixed(1)}
+          </span>
+
+          <span className={styles.reviewCount}>
+            ({product.reviewCount.toLocaleString()})
+          </span>
+        </div>
+      ) : (
+        <p className={styles.noRating}>No reviews yet</p>
+      )}
 
       <p className={styles.price}>{formatCurrency(product.price)}</p>
     </article>
