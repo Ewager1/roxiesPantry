@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import roxiesPantryLogo from "../assets/roxies-pantry-logo.png";
 
 import { DemoWorksite } from "../features/demo/components/DemoWorksite";
@@ -17,6 +19,8 @@ import styles from "./ProductsPage.module.css";
 
 export function ProductsPage() {
   const query = useCatalogQuery();
+
+  const [areFiltersOpen, setAreFiltersOpen] = useState(false);
 
   const { view, changeView } = useResultMode(query);
 
@@ -52,7 +56,26 @@ export function ProductsPage() {
         </section>
 
         <div className={styles.catalogLayout}>
-          <ProductFilters />
+          <div className={styles.mobileFilterControls}>
+            <button
+              type="button"
+              className={styles.mobileFilterButton}
+              aria-expanded={areFiltersOpen}
+              aria-controls="catalog-filters"
+              onClick={() => setAreFiltersOpen((current) => !current)}
+            >
+              {areFiltersOpen ? "Hide filters" : "Filters"}
+            </button>
+          </div>
+
+          <div
+            id="catalog-filters"
+            className={`${styles.filterPanel} ${
+              areFiltersOpen ? styles.filterPanelOpen : ""
+            }`}
+          >
+            <ProductFilters />
+          </div>
 
           <section className={styles.results}>
             <CatalogResultsBoundary>

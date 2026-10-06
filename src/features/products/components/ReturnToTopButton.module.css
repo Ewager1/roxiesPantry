@@ -44,3 +44,12 @@
   outline: 3px solid var(--color-secondary);
   outline-offset: 2px;
 }
+
+@media (max-width: 700px) {
+  .button {
+    right: var(--space-3);
+    bottom: var(--space-3);
+
+    padding: var(--space-2) var(--space-3);
+  }
+}

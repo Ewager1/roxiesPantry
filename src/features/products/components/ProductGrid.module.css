@@ -21,3 +21,9 @@
 .pet {
   flex: 0 0 auto;
 }
+
+@media (max-width: 700px) {
+  .grid {
+    gap: var(--space-4);
+  }
+}

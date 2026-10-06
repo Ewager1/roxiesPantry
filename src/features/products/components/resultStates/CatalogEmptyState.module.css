@@ -51,3 +51,9 @@
   outline: 3px solid var(--color-secondary);
   outline-offset: 2px;
 }
+
+@media (max-width: 700px) {
+  .emptyState {
+    padding: var(--space-8) var(--space-4);
+  }
+}
