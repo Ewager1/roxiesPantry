@@ -55,7 +55,6 @@
   min-width: 0;
 }
 
-.sortControl,
 .shareControl {
   flex: 0 0 auto;
 }
@@ -82,18 +81,6 @@
 
 /* Tablet */
 @media (max-width: 900px) {
-  .searchControls {
-    flex-wrap: wrap;
-  }
-
-  .searchControl {
-    flex-basis: 100%;
-  }
-
-  .sortControl {
-    flex: 1 1 auto;
-  }
-
   .catalogLayout {
     grid-template-columns: 240px minmax(0, 1fr);
 
@@ -121,7 +108,6 @@
   }
 
   .searchControl,
-  .sortControl,
   .shareControl {
     flex: 1 1 100%;
   }

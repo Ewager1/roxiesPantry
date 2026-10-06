@@ -123,12 +123,9 @@
   background: #343a41;
 }
 
-.toggleButton:disabled {
+.toggleButton[aria-pressed="true"] {
   background: #c98a2e;
   color: #17191c;
-
-  cursor: default;
-  opacity: 1;
 }
 
 .cacheButton {

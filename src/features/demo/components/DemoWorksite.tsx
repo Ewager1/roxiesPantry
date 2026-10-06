@@ -17,7 +17,7 @@ export function DemoWorksite({ view, onViewChange }: DemoWorksiteProps) {
     <aside className={styles.demoWorksite} aria-label="Demo worksite">
       <div className={styles.worksiteBody}>
         <section className={styles.optionsPanel}>
-          <h3 className={styles.sectionHeading}>Options</h3>
+          <div className={styles.sectionHeading}>Options</div>
 
           <div className={styles.optionsControls}>
             <ResultModeControl view={view} onChange={onViewChange} />
@@ -25,7 +25,7 @@ export function DemoWorksite({ view, onViewChange }: DemoWorksiteProps) {
             <NetworkSimulationControl />
 
             <div className={styles.controlGroup}>
-              <div className={styles.controlLabel}>Cache</div>
+              <div className={styles.sectionHeading}>Cache</div>
 
               <CacheControl />
             </div>

@@ -26,7 +26,7 @@ export function NetworkSimulationControl() {
         <button
           className={styles.toggleButton}
           type="button"
-          disabled={mode === "normal"}
+          aria-pressed={mode === "normal"}
           onClick={() => changeMode("normal")}
         >
           Normal
@@ -35,7 +35,7 @@ export function NetworkSimulationControl() {
         <button
           className={styles.toggleButton}
           type="button"
-          disabled={mode === "slow"}
+          aria-pressed={mode === "slow"}
           onClick={() => changeMode("slow")}
         >
           Slow

@@ -6,7 +6,6 @@ import { DemoWorksite } from "../features/demo/components/DemoWorksite";
 import { useResultMode } from "../features/demo/useResultMode";
 
 import { CatalogSearchInput } from "../features/products/components/CatalogSearchInput";
-import { CatalogSortSelect } from "../features/products/components/CatalogSortSelect";
 import { InfiniteProductResults } from "../features/products/components/InfiniteProductResults";
 import { PaginatedProductResults } from "../features/products/components/PaginatedProductResults";
 import { ProductFilters } from "../features/products/components/filters/ProductFilters";
@@ -43,10 +42,6 @@ export function ProductsPage() {
           <div className={styles.searchControls}>
             <div className={styles.searchControl}>
               <CatalogSearchInput />
-            </div>
-
-            <div className={styles.sortControl}>
-              <CatalogSortSelect />
             </div>
 
             <div className={styles.shareControl}>

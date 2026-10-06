@@ -1,18 +1,8 @@
 .filters {
-  position: sticky;
-  top: var(--space-4);
-
   display: grid;
   gap: var(--space-4);
 
   box-sizing: border-box;
-
-  max-height: calc(100dvh - var(--space-8));
-  overflow-y: auto;
-
-  padding-right: var(--space-1);
-
-  scrollbar-gutter: stable;
 }
 
 .filterCard {
@@ -54,17 +44,4 @@
 .filterActions {
   display: flex;
   justify-content: flex-end;
-}
-
-@media (max-width: 700px) {
-  .filters {
-    position: static;
-
-    max-height: none;
-    overflow-y: visible;
-
-    padding-right: 0;
-
-    scrollbar-gutter: auto;
-  }
 }

@@ -16,7 +16,7 @@ export function ResultModeControl({ view, onChange }: ResultModeControlProps) {
         <button
           className={styles.toggleButton}
           type="button"
-          disabled={view === "pagination"}
+          aria-pressed={view === "pagination"}
           onClick={() => onChange("pagination")}
         >
           Paginated
@@ -25,7 +25,7 @@ export function ResultModeControl({ view, onChange }: ResultModeControlProps) {
         <button
           className={styles.toggleButton}
           type="button"
-          disabled={view === "infinite"}
+          aria-pressed={view === "infinite"}
           onClick={() => onChange("infinite")}
         >
           Infinite
