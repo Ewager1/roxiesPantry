@@ -1,6 +1,6 @@
 import { useShareCatalog } from "../useShareCatalog";
 
-import styles from "./shareCatalogButton.module.css";
+import styles from "./ShareCatalogButton.module.css";
 
 export function ShareCatalogButton() {
   const { shareCatalog, status } = useShareCatalog();
